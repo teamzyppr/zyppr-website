@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" class="lenis-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyppr · About Us</title>
+    <meta name="description"
+        content="Zyppr is the first fully homegrown networking tunneling platform built in the UAE for the world. Learn our story.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.1/dist/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #06080A;
+            --surface: #101318;
+            --surface-2: #181C24;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.18);
+            --text: #F0F0F5;
+            --text-2: #9898A8;
+            --text-3: #5A5A6E;
+            --cyan: #00E5FF;
+            --green: #22C55E;
+            --purple: #A855F7;
+            --gradient: linear-gradient(135deg, #00E5FF, #A855F7);
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
+        }
+
+        .cursor.active {
+            width: 50px;
+            height: 50px;
+            border-color: var(--cyan);
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transition: background 0.4s;
+            background: rgba(6, 8, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .nav-logo img {
+            height: 36px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--cyan);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            cursor: none;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Footer override */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 5rem 2rem 2rem;
+            margin-top: 4rem;
+            position: relative;
+            z-index: 1;
+            background: var(--surface);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-desc {
+            color: var(--text-3);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            max-width: 260px;
+        }
+
+        .footer-col h5 {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--green);
+            transform: translateX(5px);
+        }
+
+        /* About specifically */
+        .mono-kicker {
+            font-family: var(--font-mono);
+            color: var(--cyan);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .about-main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 10rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .about-mission {
+            margin: 4rem auto;
+            color: var(--text-2);
+            font-size: 1.4rem;
+            line-height: 1.7;
+            font-family: var(--font-serif);
+            max-width: 800px;
+            position: relative;
+        }
+
+        .about-mission::before {
+            content: '"';
+            font-size: 4rem;
+            position: absolute;
+            left: -2rem;
+            top: -1.5rem;
+            color: var(--border);
+            font-family: var(--font-serif);
+        }
+
+        /* Bento stats */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 5rem;
+            text-align: left;
+        }
+
+        .bento {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            transition: transform 0.4s, border-color 0.4s;
+        }
+
+        .bento:hover {
+            transform: translateY(-5px);
+            border-color: var(--cyan);
+            background: var(--surface-2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 229, 255, 0.05);
+        }
+
+        .b-icon {
+            font-size: 1.8rem;
+            color: var(--cyan);
+            margin-bottom: 1.2rem;
+        }
+
+        .bento h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+
+        .bento p {
+            color: var(--text-2);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        @media(max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <!-- Nav -->
+    <nav class="nav" id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo"><img src="assets/logo.png" alt="Zyppr"
+                    onerror="this.style.display='none'"></a>
+            <div class="nav-links">
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">P2P</a>
+                <a href="lattice-wire.html">Lattice-Wire</a>
+                <a href="docs.html">Docs</a>
+                <a href="api.html">API</a>
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <a href="http://localhost:8080/login"
+                    style="color:var(--text-2); text-decoration:none; font-size:0.85rem; font-weight:500; text-transform:uppercase;">Log
+                    in</a>
+                <a href="http://localhost:8080/signup" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="about-main">
+        <span class="mono-kicker">Est. Dubai 2026</span>
+        <h1 style="font-family: var(--font-serif); font-size: 4rem; font-weight: 400; margin-bottom: 1rem;">From the
+            Desert <br> <span class="gradient-text">To The Stars</span></h1>
+
+        <p
+            style="color: var(--text-2); font-size: 1.15rem; margin-bottom: 3rem; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+            We are building the digital infrastructure for the next generation of global innovators, straight from the
+            UAE.
+        </p>
+
+        <div class="about-mission">
+            Zyppr was born out of a need for sovereignty and speed. We believe that developers in the region deserve
+            toolchains that are as ambitious as the cities we live in. We are creating a low-latency, high-security
+            bridge between local development environments and the global internet.
+        </div>
+
+        <div class="bento-grid">
+            <div class="bento">
+                <i class="fas fa-building b-icon"></i>
+                <h3>Dubai HQ</h3>
+                <p>Our core engineering team based in the heart of the Emirates.</p>
+            </div>
+            <div class="bento">
+                <i class="fas fa-project-diagram b-icon" style="color: var(--purple);"></i>
+                <h3>Regional Nodes</h3>
+                <p>Ultra-low latency edge servers across the globe for sub-10ms response.</p>
+            </div>
+            <div class="bento">
+                <i class="fas fa-code b-icon" style="color: var(--green);"></i>
+                <h3>Home Grown</h3>
+                <p>100% developed, engineered, and maintained within the UAE.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div>
+                <a href="index.html" class="footer-logo">⚡ Zyppr</a>
+                <p class="footer-desc">The platform for developers to connect, route, and secure their environments
+                    effortlessly.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Platform</h5>
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">Zyppr P2P</a>
+                <a href="lattice-wire.html">Lattice-Wire</a>
+                <a href="index.html#pricing">Pricing</a>
+            </div>
+            <div class="footer-col">
+                <h5>Resources</h5>
+                <a href="docs.html">Documentation</a>
+                <a href="api.html">API Reference</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-col">
+                <h5>Company</h5>
+                <a href="founder.html">Founder's Note</a>
+                <a href="about.html">About Us</a>
+                <a href="mailto:hello@zyppr.online">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Cursor Follower
+        const cursor = document.getElementById('cursor');
+        const cursorDot = document.getElementById('cursor-dot');
+        let cx = 0, cy = 0, ddx = 0, ddy = 0;
+
+        document.addEventListener('mousemove', e => {
+            ddx = e.clientX;
+            ddy = e.clientY;
+        });
+
+        (function renderCursor() {
+            cx += (ddx - cx) * 0.15;
+            cy += (ddy - cy) * 0.15;
+            if (cursor) {
+                cursor.style.left = cx + 'px';
+                cursor.style.top = cy + 'px';
+            }
+            if (cursorDot) {
+                cursorDot.style.left = ddx + 'px';
+                cursorDot.style.top = ddy + 'px';
+            }
+            requestAnimationFrame(renderCursor);
+        })();
+
+        document.querySelectorAll('a, button, .bento').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor && cursor.classList.add('active'));
+            el.addEventListener('mouseleave', () => cursor && cursor.classList.remove('active'));
+        });
+
+        // NavBar scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // GSAP Animations
+        gsap.from('.mono-kicker', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' });
+        gsap.from('h1', { y: 30, opacity: 0, duration: 0.8, delay: 0.1, ease: 'power3.out' });
+        gsap.from('p', { y: 30, opacity: 0, duration: 0.8, delay: 0.2, ease: 'power3.out' });
+        gsap.from('.about-mission', { y: 30, opacity: 0, duration: 0.8, delay: 0.3, ease: 'power3.out' });
+
+        gsap.utils.toArray('.bento').forEach((el, i) => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: 'top 90%' },
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                delay: i * 0.15,
+                ease: 'power3.out'
+            });
+        });
+    </script>
+</body>
+
+</html>

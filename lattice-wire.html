@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LatticeWire · Post-Quantum Transport Protocol</title>
+    <meta name="description"
+        content="LatticeWire — a next-generation secure networking protocol with post-quantum cryptography, zero-allocation data plane, and stealth transport modes.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.1/dist/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #06060A;
+            --surface: #111118;
+            --surface-2: #1A1A24;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --text: #F0F0F5;
+            --text-2: #9898A8;
+            --text-3: #5A5A6E;
+            --pink: #EC4899;
+            --pink-dim: rgba(236, 72, 153, 0.15);
+            --purple: #A855F7;
+            --cyan: #00E5FF;
+            --green: #22C55E;
+            --gradient: linear-gradient(135deg, #EC4899, #A855F7);
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
+        }
+
+        .cursor.active {
+            width: 50px;
+            height: 50px;
+            border-color: var(--pink);
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transition: background 0.4s;
+        }
+
+        .nav.scrolled {
+            background: rgba(6, 6, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .nav-logo img {
+            height: 36px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--pink);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: #fff;
+        }
+
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--pink);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-outline:hover {
+            background: rgba(236, 72, 153, 0.08);
+            border-color: var(--pink);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 1rem;
+            background: rgba(236, 72, 153, 0.06);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            border-radius: 100px;
+            color: var(--pink);
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            opacity: 0;
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 7vw, 6rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+        }
+
+        .hero h1 .g {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradient-shift 4s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+
+            0%,
+            100% {
+                background-position: 0% 50%
+            }
+
+            50% {
+                background-position: 100% 50%
+            }
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            color: var(--text-2);
+            line-height: 1.6;
+            max-width: 650px;
+            margin: 0 auto 3rem;
+            opacity: 0;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            opacity: 0;
+        }
+
+        /* Terminal */
+        .terminal-wrap {
+            perspective: 1000px;
+            max-width: 550px;
+            margin: 2rem auto 0;
+            opacity: 0;
+        }
+
+        .terminal {
+            background: #000;
+            border: 1px solid var(--border-hover);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(236, 72, 153, 0.05);
+            transform: rotateX(3deg);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .terminal:hover {
+            transform: rotateX(0) scale(1.02);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.r {
+            background: #FF5F57;
+        }
+
+        .terminal-dot.y {
+            background: #FFBD2E;
+        }
+
+        .terminal-dot.g {
+            background: #28C840;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        .terminal-body .prompt {
+            color: var(--pink);
+        }
+
+        .terminal-body .out {
+            color: var(--text-3);
+        }
+
+        .t-line {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.1em;
+            background: var(--pink);
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-header .kicker {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--pink);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.2rem, 5vw, 3rem);
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-2);
+            font-size: 1.1rem;
+            max-width: 550px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .py {
+            padding: 7rem 0;
+        }
+
+        /* Philosophy Cards */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s, border-color 0.4s;
+            transform-style: preserve-3d;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            background: var(--pink-dim);
+            color: var(--pink);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            transition: transform 0.4s;
+        }
+
+        .card:hover .icon {
+            transform: scale(1.15) translateY(-4px);
+        }
+
+        .card.highlight {
+            background: linear-gradient(180deg, rgba(236, 72, 153, 0.04) 0%, transparent 100%);
+            border-color: rgba(236, 72, 153, 0.15);
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--text-2);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Architecture */
+        .arch-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .arch-diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .arch-layer {
+            background: #000;
+            border: 1px solid var(--border-hover);
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            width: 280px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+            color: var(--cyan);
+        }
+
+        .arch-layer.pink {
+            color: var(--pink);
+            border-color: rgba(236, 72, 153, 0.3);
+        }
+
+        .arch-layer:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+            border-color: rgba(0, 229, 255, 0.4);
+        }
+
+        .arch-layer.pink:hover {
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.15);
+            border-color: rgba(236, 72, 153, 0.5);
+        }
+
+        .arch-link {
+            width: 2px;
+            height: 36px;
+            position: relative;
+        }
+
+        .arch-link .packet {
+            position: absolute;
+            left: -4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--pink);
+            box-shadow: 0 0 12px var(--pink);
+            animation: travel 1.8s infinite ease-in-out;
+        }
+
+        @keyframes travel {
+            0% {
+                top: -4px;
+                opacity: 0
+            }
+
+            10% {
+                opacity: 1
+            }
+
+            90% {
+                opacity: 1
+            }
+
+            100% {
+                top: calc(100% - 4px);
+                opacity: 0
+            }
+        }
+
+        .arch-link:nth-of-type(2) .packet {
+            animation-delay: 0.4s;
+        }
+
+        .arch-link:nth-of-type(3) .packet {
+            animation-delay: 0.8s;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.7rem;
+            border-radius: 100px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-3);
+            transition: all 0.3s;
+            cursor: default;
+        }
+
+        .tag:hover {
+            border-color: var(--border-hover);
+            color: var(--text-2);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* Feature Cards Grid */
+        .feat-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+        }
+
+        .feat-card {
+            background: rgba(236, 72, 153, 0.03);
+            border: 1px solid rgba(236, 72, 153, 0.12);
+            border-radius: 14px;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+            cursor: default;
+        }
+
+        .feat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(236, 72, 153, 0.12) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .feat-card:hover::before {
+            opacity: 1;
+        }
+
+        .feat-card:hover {
+            border-color: rgba(236, 72, 153, 0.4);
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(236, 72, 153, 0.12), 0 0 30px rgba(236, 72, 153, 0.06);
+        }
+
+        .feat-card.cyan {
+            background: rgba(0, 229, 255, 0.03);
+            border-color: rgba(0, 229, 255, 0.12);
+        }
+
+        .feat-card.cyan::before {
+            background: radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.12) 0%, transparent 60%);
+        }
+
+        .feat-card.cyan:hover {
+            border-color: rgba(0, 229, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 229, 255, 0.12), 0 0 30px rgba(0, 229, 255, 0.06);
+        }
+
+        .feat-icon {
+            font-size: 1.5rem;
+            color: var(--pink);
+            filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.3));
+            transition: transform 0.4s, filter 0.4s;
+        }
+
+        .feat-card:hover .feat-icon {
+            transform: scale(1.2) translateY(-3px);
+            filter: drop-shadow(0 0 16px rgba(236, 72, 153, 0.5));
+        }
+
+        .feat-card.cyan .feat-icon {
+            color: var(--cyan);
+            filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));
+        }
+
+        .feat-card.cyan:hover .feat-icon {
+            filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.5));
+        }
+
+        .feat-card span {
+            font-size: 0.82rem;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .feat-pulse {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--pink);
+            box-shadow: 0 0 6px var(--pink);
+            animation: feat-blink 3s ease-in-out infinite;
+        }
+
+        .feat-pulse.cyan {
+            background: var(--cyan);
+            box-shadow: 0 0 6px var(--cyan);
+        }
+
+        @keyframes feat-blink {
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @media(max-width:1024px) {
+            .feat-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media(max-width:600px) {
+            .feat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Benchmark */
+        .bench-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-3);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        td {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .counter {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Bar visualization */
+        .bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gradient);
+            transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* CLI */
+        .cli-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .cli-terminal {
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .cli-terminal .line {
+            margin-bottom: 0.5rem;
+            opacity: 0;
+        }
+
+        .cli-terminal .cmd {
+            color: var(--pink);
+        }
+
+        .cli-terminal .comment {
+            color: var(--text-3);
+        }
+
+        /* Roadmap Timeline */
+        .roadmap-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .roadmap-item {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .roadmap-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--pink);
+            margin-top: 0.3rem;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .roadmap-item:hover .roadmap-dot {
+            background: var(--pink);
+            box-shadow: 0 0 12px var(--pink);
+        }
+
+        .roadmap-item h4 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .roadmap-item p {
+            font-size: 0.85rem;
+            color: var(--text-2);
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 5rem 2rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo img {
+            height: 24px;
+        }
+
+        .footer-desc {
+            color: var(--text-3);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            max-width: 260px;
+        }
+
+        .footer-col h5 {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--text);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 4rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-3);
+            font-size: 0.8rem;
+        }
+
+        @media(max-width:1024px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .arch-wrap,
+            .cli-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width:768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .cursor,
+            .cursor-dot {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+
+        @media(max-width:500px) {
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <div class="hero" id="hero-section">
+        <canvas id="hero-canvas"></canvas>
+
+        <div class="hero-badge" id="hero-badge"><i class="fas fa-shield-alt"></i> World's First · Userspace PQ Transport
+        </div>
+        <h1 id="hero-title">
+            A Protocol for the<br><span class="g">Post-Quantum Internet</span>
+        </h1>
+        <p class="hero-desc" id="hero-desc">
+            LatticeWire is a next-gen high-performance transport protocol built entirely in userspace. Hybrid PQC+EC
+            cryptography,
+            zero-allocation packet processing, stealth-capable transport modes — engineered from scratch in Rust.
+        </p>
+        <p style="color:var(--text-3); font-size:0.85rem; margin-bottom:2rem; opacity:0;" id="hero-status">
+            <i class="fas fa-flask" style="color:var(--pink); margin-right:6px;"></i>
+            Currently in active development · Research contributions welcome
+        </p>
+        <div class="hero-buttons" id="hero-buttons">
+            <a href="https://github.com/zyppr/lattice-wire" target="_blank" class="btn btn-outline"><i
+                    class="fab fa-github"></i> View Repository</a>
+            <a href="docs.html" class="btn btn-ghost"><span>Read Docs</span></a>
+        </div>
+
+        <div class="terminal-wrap" id="hero-terminal">
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="terminal-dot r"></div>
+                    <div class="terminal-dot y"></div>
+                    <div class="terminal-dot g"></div>
+                </div>
+                <div class="terminal-body" id="hero-term-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="nav" id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo"><img src="assets/logo.png" alt="Zyppr"
+                    onerror="this.style.display='none'"></a>
+            <div class="nav-links">
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">P2P</a>
+                <a href="lattice-wire.html" class="active">Lattice-Wire</a>
+                <a href="docs.html">Docs</a>
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <a href="http://localhost:8080/login"
+                    style="color:var(--text-2); text-decoration:none; font-size:0.85rem; font-weight:500; text-transform:uppercase;">Log
+                    in</a>
+                <a href="http://localhost:8080/signup" class="btn btn-primary" style="padding:0.5rem 1.2rem;">Sign
+                    Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Philosophy -->
+    <section class="container py" id="philosophy">
+        <div class="section-header">
+            <span class="kicker">Design Philosophy</span>
+            <h2>Why LatticeWire Exists</h2>
+            <p>OpenVPN is flexible but slow. IPsec is incredibly complex. WireGuard is fast but rigid. Modern networking
+                requires more.</p>
+        </div>
+        <div class="grid-3">
+            <div class="card" id="card-1">
+                <div class="icon"><i class="fas fa-bolt"></i></div>
+                <h3>Performance First</h3>
+                <p>Zero-allocation packet processing with lock-free buffer pooling. Deterministic high throughput even
+                    across trans-atlantic connections.</p>
+            </div>
+            <div class="card highlight" id="card-2">
+                <div class="icon"><i class="fas fa-atom"></i></div>
+                <h3>Cryptographic Future-Proofing</h3>
+                <p>Hybrid ML-KEM-768 + X25519 key exchange. Prevents "harvest now, decrypt later" quantum attacks
+                    natively.</p>
+            </div>
+            <div class="card" id="card-3">
+                <div class="icon"><i class="fas fa-eye-slash"></i></div>
+                <h3>Stealth Transport</h3>
+                <p>Dual UDP and TCP modes bypass DPI firewalls. Shadow Port Authorization gates prevent unauthorized
+                    scanning.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- V1+ Hardened Features -->
+    <section class="container py" id="hardened">
+        <div class="section-header">
+            <span class="kicker">Security Surface</span>
+            <h2>V1+ Hardened Features</h2>
+            <p>Every item below is implemented, tested, and production-ready in the current codebase.</p>
+        </div>
+
+        <!-- Cryptography Column -->
+        <h4
+            style="font-family:var(--font-mono); font-size:0.8rem; color:var(--pink); text-transform:uppercase; letter-spacing:2px; margin-bottom:1.5rem; text-align:center;">
+            <i class="fas fa-lock" style="margin-right:6px;"></i> Cryptography
+        </h4>
+        <div class="feat-grid">
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-atom feat-icon"></i><span>Hybrid PQC Handshake<br><small
+                        style="color:var(--text-3); font-size:0.7rem;">X25519 + ML-KEM-768</small></span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-fingerprint feat-icon"></i><span>ML-DSA-65
+                    Authentication</span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-project-diagram feat-icon"></i><span>Domain-Separated
+                    KDF</span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-split feat-icon"></i><span>Key Splitting<br><small
+                        style="color:var(--text-3); font-size:0.7rem;">send / recv isolation</small></span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-envelope-open-text feat-icon"></i><span>Encrypted
+                    ServerHello</span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-link feat-icon"></i><span>Chaining Hash</span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-hashtag feat-icon"></i><span>Nonce Uniqueness</span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-cubes feat-icon"></i><span>BLAKE3 KDF</span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-eraser feat-icon"></i><span>Zeroization of Secrets</span>
+            </div>
+            <div class="feat-card">
+                <div class="feat-pulse"></div><i class="fas fa-shield-alt feat-icon"></i><span>PQ-First
+                    Architecture</span>
+            </div>
+        </div>
+
+        <!-- Networking Column -->
+        <h4
+            style="font-family:var(--font-mono); font-size:0.8rem; color:var(--cyan); text-transform:uppercase; letter-spacing:2px; margin:4rem 0 1.5rem; text-align:center;">
+            <i class="fas fa-network-wired" style="margin-right:6px;"></i> Networking &amp; Resilience
+        </h4>
+        <div class="feat-grid">
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-history feat-icon"></i><span>Replay Window<br><small
+                        style="color:var(--text-3); font-size:0.7rem;">RFC 6479-style</small></span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-layer-group feat-icon"></i><span>Overlapping
+                    Sessions<br><small style="color:var(--text-3); font-size:0.7rem;">During Rekey</small></span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-redo feat-icon"></i><span>Rekey Retry Fix</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-wifi feat-icon"></i><span>Rekey on Roaming</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-power-off feat-icon"></i><span>Rekey on
+                    Suspend/Resume</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-heartbeat feat-icon"></i><span>Keepalive
+                    Jitter</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-tachometer-alt feat-icon"></i><span>Token Bucket
+                    Rate Limiting</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-expand-arrows-alt feat-icon"></i><span>Amplification
+                    Guard<br><small style="color:var(--text-3); font-size:0.7rem;">min ClientHello size</small></span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-ruler feat-icon"></i><span>Frame Length Cap</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-ban feat-icon"></i><span>Roaming DoS Cap</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-shield-virus feat-icon"></i><span>Basic DoS
+                    Hardening</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fas fa-satellite-dish feat-icon"></i><span>Persistent NAT
+                    Keepalive</span>
+            </div>
+            <div class="feat-card cyan">
+                <div class="feat-pulse cyan"></div><i class="fab fa-apple feat-icon"></i><span>PF_ROUTE
+                    Monitoring<br><small style="color:var(--text-3); font-size:0.7rem;">macOS native</small></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="container py" id="architecture">
+        <div class="section-header">
+            <span class="kicker">Architecture</span>
+            <h2>High-Performance Data Plane</h2>
+            <p>Built entirely in Rust, avoiding locking overhead and GC pauses.</p>
+        </div>
+        <div class="arch-wrap">
+            <div class="arch-diagram" id="arch-diagram">
+                <div class="arch-layer">TUN Interface</div>
+                <div class="arch-link"><span class="packet"></span></div>
+                <div class="arch-layer">Direct Worker Dispatch</div>
+                <div class="arch-link"><span class="packet"></span></div>
+                <div class="arch-layer pink">In-Place Encryption (XChaCha20)</div>
+                <div class="arch-link"><span class="packet"></span></div>
+                <div class="arch-layer">UDP / TCP Stealth Transport</div>
+            </div>
+            <div>
+                <h3 style="font-family:var(--font-serif); font-size:2rem; font-weight:400; margin-bottom:1rem;">Minimal
+                    overhead.<br>Maximum throughput.</h3>
+                <p style="color:var(--text-2); line-height:1.6; margin-bottom:2rem;">Each stage avoids unnecessary
+                    allocations. Lock-free buffer pooling and dedicated packet writers mean LatticeWire scales
+                    predictably across cores.</p>
+                <h4 style="font-size:1rem; margin-bottom:0.5rem;">Secure Handshake Gate</h4>
+                <p style="color:var(--text-2); font-size:0.9rem; line-height:1.5; margin-bottom:1.5rem;">Before
+                    connection creation, the server evaluates ML-DSA-65 authorization signals from clients to prevent
+                    unsolicited traffic scanning and DDoS abuse.</p>
+                <div class="tag-list">
+                    <span class="tag">Connection Rekeying</span>
+                    <span class="tag">Network Roaming</span>
+                    <span class="tag">Nonce Uniqueness</span>
+                    <span class="tag">Sliding Window</span>
+                    <span class="tag">BLAKE3 KDF</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benchmarks -->
+    <section class="container py" id="benchmarks">
+        <div class="section-header">
+            <span class="kicker">Performance</span>
+            <h2>Real-World Benchmarks</h2>
+            <p>Tested under high-latency, long-distance conditions with hybrid encryption active.</p>
+        </div>
+        <div class="bench-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Result</th>
+                        <th style="width:40%;">Visualization</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sustained Download</td>
+                        <td><span class="counter" data-target="75">0</span> Mbps peak</td>
+                        <td>
+                            <div class="bar-wrap">
+                                <div class="bar" data-width="75" style="width:0%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sustained Upload</td>
+                        <td><span class="counter" data-target="51">0</span> Mbps peak</td>
+                        <td>
+                            <div class="bar-wrap">
+                                <div class="bar" data-width="51" style="width:0%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Latency (Trans-Atlantic)</td>
+                        <td>~<span class="counter" data-target="200">0</span>ms RTT</td>
+                        <td>
+                            <div class="bar-wrap">
+                                <div class="bar" data-width="20" style="width:0%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Packet Loss</td>
+                        <td><span class="counter" data-target="0">0</span>%</td>
+                        <td>
+                            <div class="bar-wrap">
+                                <div class="bar" data-width="0" style="width:0%;"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- CLI + Roadmap -->
+    <section class="container py" id="manage">
+        <div class="section-header">
+            <span class="kicker">CLI & Roadmap</span>
+            <h2>Effortless Management</h2>
+            <p>No heavy config languages. Fast operations via a lightweight CLI.</p>
+        </div>
+        <div class="cli-section">
+            <div class="cli-terminal" id="cli-code"></div>
+            <div>
+                <h3 style="font-family:var(--font-serif); font-size:2rem; font-weight:400; margin-bottom:1.5rem;">
+                    Roadmap</h3>
+                <div class="roadmap-list">
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div>
+                            <h4>Centralized Control Plane</h4>
+                            <p>Device provisioning, peer management, and orchestration.</p>
+                        </div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div>
+                            <h4>Policy Access Controls</h4>
+                            <p>Fine-grained rules for controlling network connectivity.</p>
+                        </div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div>
+                            <h4>Identity Integration</h4>
+                            <p>SSO and identity-based networking for enterprise security.</p>
+                        </div>
+                    </div>
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div>
+                            <h4>Advanced Routing</h4>
+                            <p>Network segmentation and intelligent traffic shaping.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contributing -->
+    <section class="container py" style="padding-top:0;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:3rem;">
+            <div class="card" style="padding:3rem;">
+                <div class="icon"
+                    style="background:rgba(34,197,94,0.15); color:var(--green); border-color:rgba(34,197,94,0.2);"><i
+                        class="fas fa-code-branch"></i></div>
+                <h3>Contributing</h3>
+                <p style="margin-bottom:1.5rem;">LatticeWire welcomes research contributions, performance improvements,
+                    and security reviews. As a networking protocol project, careful review and testing are essential for
+                    maintaining reliability and security.</p>
+                <a href="https://github.com/zyppr/lattice-wire" target="_blank" class="btn btn-outline"
+                    style="font-size:0.8rem; padding:0.5rem 1rem;"><i class="fab fa-github"></i> Contribute on
+                    GitHub</a>
+            </div>
+            <div class="card"
+                style="padding:3rem; background:linear-gradient(180deg, rgba(236,72,153,0.04) 0%, transparent 100%); border-color:rgba(236,72,153,0.15);">
+                <div class="icon"><i class="fas fa-telescope"></i></div>
+                <h3>Future Vision</h3>
+                <p>The long-term vision of LatticeWire is to provide a secure and efficient networking foundation
+                    capable of supporting future internet infrastructure. By combining performance engineering with
+                    modern cryptography, LatticeWire aims to help shape the next generation of secure networking
+                    technologies.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div>
+                <a href="index.html" class="footer-logo"><img src="assets/logo.png" alt="Zyppr"
+                        onerror="this.style.display='none'"> Zyppr</a>
+                <p class="footer-desc">The platform for developers to connect, route, and secure their environments
+                    effortlessly.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Products</h5><a href="tunnel.html">Zyppr Tunnel</a><a href="p2p.html">Zyppr P2P</a><a
+                    href="lattice-wire.html">LatticeWire</a>
+            </div>
+            <div class="footer-col">
+                <h5>Developers</h5><a href="docs.html">Documentation</a><a href="api.html">API Reference</a><a
+                    href="https://github.com/zyppr">GitHub</a>
+            </div>
+            <div class="footer-col">
+                <h5>Company</h5><a href="about.html">Our Story</a><a href="legal.html">Terms</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 Zyppr Inc.</div>
+            <div>Made with ❤️ in Dubai · <a href="mailto:hello@zyppr.online"
+                    style="color:inherit; text-decoration:none;">hello@zyppr.online</a></div>
+        </div>
+    </footer>
+
+    <script>
+        // LENIS
+        const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // THREE.JS — pink/purple particle mesh
+        (function () {
+            const canvas = document.getElementById('hero-canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+            const N = 160;
+            const pos = new Float32Array(N * 3);
+            const vel = [];
+            for (let i = 0; i < N; i++) {
+                pos[i * 3] = (Math.random() - 0.5) * 50;
+                pos[i * 3 + 1] = (Math.random() - 0.5) * 35;
+                pos[i * 3 + 2] = (Math.random() - 0.5) * 25;
+                vel.push({ x: (Math.random() - 0.5) * 0.015, y: (Math.random() - 0.5) * 0.015, z: (Math.random() - 0.5) * 0.008 });
+            }
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const mat = new THREE.PointsMaterial({ color: 0xEC4899, size: 0.12, transparent: true, opacity: 0.6, sizeAttenuation: true });
+            scene.add(new THREE.Points(geo, mat));
+            const lineGeo = new THREE.BufferGeometry();
+            const lineMat = new THREE.LineBasicMaterial({ color: 0xEC4899, transparent: true, opacity: 0.06 });
+            const lines = new THREE.LineSegments(lineGeo, lineMat);
+            scene.add(lines);
+            let mx = 0, my = 0;
+            document.addEventListener('mousemove', e => { mx = (e.clientX / window.innerWidth - 0.5) * 2; my = (e.clientY / window.innerHeight - 0.5) * 2; });
+            (function animate() {
+                requestAnimationFrame(animate);
+                const p = geo.attributes.position.array;
+                for (let i = 0; i < N; i++) { p[i * 3] += vel[i].x; p[i * 3 + 1] += vel[i].y; p[i * 3 + 2] += vel[i].z; if (Math.abs(p[i * 3]) > 25) vel[i].x *= -1; if (Math.abs(p[i * 3 + 1]) > 17) vel[i].y *= -1; if (Math.abs(p[i * 3 + 2]) > 12) vel[i].z *= -1; }
+                geo.attributes.position.needsUpdate = true;
+                const lp = [];
+                for (let i = 0; i < N; i++)for (let j = i + 1; j < N; j++) { const d = Math.sqrt((p[i * 3] - p[j * 3]) ** 2 + (p[i * 3 + 1] - p[j * 3 + 1]) ** 2 + (p[i * 3 + 2] - p[j * 3 + 2]) ** 2); if (d < 7) { lp.push(p[i * 3], p[i * 3 + 1], p[i * 3 + 2], p[j * 3], p[j * 3 + 1], p[j * 3 + 2]); } }
+                lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
+                camera.position.x += (mx * 2.5 - camera.position.x) * 0.02; camera.position.y += (-my * 1.5 - camera.position.y) * 0.02;
+                camera.lookAt(scene.position); renderer.render(scene, camera);
+            })();
+            window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+        })();
+
+        // CUSTOM CURSOR
+        const cursor = document.getElementById('cursor'), cursorDot = document.getElementById('cursor-dot');
+        let cx = 0, cy = 0, ddx = 0, ddy = 0;
+        document.addEventListener('mousemove', e => { ddx = e.clientX; ddy = e.clientY; });
+        (function mc() { cx += (ddx - cx) * 0.15; cy += (ddy - cy) * 0.15; if (cursor) { cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px'; } if (cursorDot) { cursorDot.style.left = ddx + 'px'; cursorDot.style.top = ddy + 'px'; } requestAnimationFrame(mc); })();
+        document.querySelectorAll('a,button,.card,.tag,.arch-layer,.roadmap-item').forEach(el => { el.addEventListener('mouseenter', () => cursor && cursor.classList.add('active')); el.addEventListener('mouseleave', () => cursor && cursor.classList.remove('active')); });
+
+        // GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero entrance
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.to('#hero-badge', { opacity: 1, y: 0, duration: 0.8 }, 0.2)
+            .to('#hero-title', { opacity: 1, y: 0, duration: 1 }, 0.4)
+            .to('#hero-desc', { opacity: 1, y: 0, duration: 0.8 }, 0.7)
+            .to('#hero-status', { opacity: 1, y: 0, duration: 0.6 }, 0.8)
+            .to('#hero-buttons', { opacity: 1, y: 0, duration: 0.8 }, 0.9)
+            .to('#hero-terminal', { opacity: 1, y: 0, duration: 0.8 }, 1.1);
+
+        // Hero terminal typing
+        setTimeout(() => {
+            const body = document.getElementById('hero-term-body');
+            const cmds = [
+                { t: 'prompt', v: '$ lw up aws-production-env' },
+                { t: 'out', v: '=> Initiating post-quantum handshake...' },
+                { t: 'out', v: '=> Zero-allocation tunnel established (55Mbps).' },
+            ];
+            let li = 0;
+            function addLine() {
+                if (li >= cmds.length) return;
+                const cmd = cmds[li];
+                const div = document.createElement('div');
+                div.className = 't-line';
+                if (cmd.t === 'prompt') {
+                    div.innerHTML = '<span class="prompt">$ </span><span class="cmd"></span><span class="typing-cursor"></span>';
+                    body.appendChild(div);
+                    gsap.to(div, { opacity: 1, y: 0, duration: 0.3 });
+                    const sp = div.querySelector('.cmd'), cur = div.querySelector('.typing-cursor');
+                    let ci = 0; const txt = cmd.v.substring(2);
+                    (function tc() {
+                        if (ci <= txt.length) { sp.textContent = txt.substring(0, ci); ci++; setTimeout(tc, 30 + Math.random() * 20); }
+                        else { cur.remove(); li++; setTimeout(addLine, 300); }
+                    })();
+                } else {
+                    div.innerHTML = '<span class="out">' + cmd.v + '</span>';
+                    body.appendChild(div);
+                    gsap.to(div, { opacity: 1, y: 0, duration: 0.4 });
+                    li++;
+                    setTimeout(addLine, 250);
+                }
+            }
+            addLine();
+        }, 1500);
+
+        // Nav scroll
+        ScrollTrigger.create({ start: 'top -80', onUpdate: s => document.getElementById('navbar').classList.toggle('scrolled', s.progress > 0) });
+
+        // Cards stagger + 3D tilt
+        gsap.utils.toArray('.card').forEach((c, i) => {
+            gsap.from(c, { scrollTrigger: { trigger: c, start: 'top 85%' }, opacity: 0, y: 50, duration: 0.8, delay: i * 0.15, ease: 'power3.out' });
+            c.addEventListener('mousemove', e => {
+                const r = c.getBoundingClientRect();
+                c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+                c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+                gsap.to(c, { rotateX: ((e.clientY - r.top) / r.height - 0.5) * 10, rotateY: ((e.clientX - r.left) / r.width - 0.5) * -10, duration: 0.4, ease: 'power2.out', transformPerspective: 600 });
+            });
+            c.addEventListener('mouseleave', () => gsap.to(c, { rotateX: 0, rotateY: 0, duration: 0.6, ease: 'elastic.out(1,0.5)' }));
+        });
+
+        // Architecture reveal
+        gsap.from('#arch-diagram', { scrollTrigger: { trigger: '#architecture', start: 'top 75%' }, opacity: 0, x: -40, duration: 1, ease: 'power3.out' });
+
+        // Hardened feat-cards stagger + 3D tilt
+        gsap.utils.toArray('.feat-card').forEach((fc, i) => {
+            gsap.from(fc, { scrollTrigger: { trigger: fc, start: 'top 90%' }, opacity: 0, y: 25, scale: 0.95, duration: 0.5, delay: (i % 5) * 0.08, ease: 'back.out(1.5)' });
+            fc.addEventListener('mousemove', e => {
+                const r = fc.getBoundingClientRect();
+                gsap.to(fc, { rotateX: ((e.clientY - r.top) / r.height - 0.5) * 12, rotateY: ((e.clientX - r.left) / r.width - 0.5) * -12, duration: 0.3, ease: 'power2.out', transformPerspective: 500 });
+            });
+            fc.addEventListener('mouseleave', () => gsap.to(fc, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'elastic.out(1,0.5)' }));
+        });
+
+        // Benchmark counters + bars
+        ScrollTrigger.create({
+            trigger: '#benchmarks', start: 'top 70%', once: true, onEnter: () => {
+                document.querySelectorAll('.counter').forEach(el => {
+                    const t = parseInt(el.dataset.target); if (t === 0) { el.textContent = '0'; return; }
+                    gsap.to(el, { innerText: t, duration: 1.5, snap: { innerText: 1 }, ease: 'power2.out', modifiers: { innerText: v => Math.round(v) } });
+                });
+                document.querySelectorAll('.bar').forEach(bar => {
+                    gsap.to(bar, { width: bar.dataset.width + '%', duration: 1.5, ease: 'power3.out', delay: 0.3 });
+                });
+            }
+        });
+
+        // Section headers
+        gsap.utils.toArray('.section-header').forEach(h => { gsap.from(h, { scrollTrigger: { trigger: h, start: 'top 80%' }, opacity: 0, y: 40, duration: 0.8, ease: 'power3.out' }); });
+
+        // CLI typing
+        (function () {
+            const el = document.getElementById('cli-code'); if (!el) return;
+            const cmds = [{ c: 'lw init', t: '# Generate device identity' }, { c: 'lw gen-keys', t: '# Output PQ+EC Hybrid Keys' }, { c: 'lw up', t: '# Bring tunnel online' }, { c: 'lw show', t: '# View active PEERs' }, { c: 'lw down', t: '# Tear down routing' }];
+            let li = 0;
+            function typeLine() {
+                if (li >= cmds.length) return;
+                const { c, t } = cmds[li]; const sp = document.createElement('div'); sp.className = 'line'; el.appendChild(sp);
+                let ci = 0;
+                (function tc() {
+                    if (ci <= c.length) { sp.innerHTML = '<span class="cmd">' + c.substring(0, ci) + '</span><span class="typing-cursor"></span>'; ci++; setTimeout(tc, 50 + Math.random() * 30); }
+                    else { sp.innerHTML = '<span class="cmd">' + c + '</span> <span class="comment">' + t + '</span>'; gsap.to(sp, { opacity: 1, duration: 0.3 }); li++; setTimeout(typeLine, 300); }
+                })();
+            }
+            const obs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { typeLine(); obs.unobserve(e.target); } }); }, { threshold: 0.3 });
+            obs.observe(el);
+        })();
+
+        // Roadmap items
+        gsap.utils.toArray('.roadmap-item').forEach((item, i) => {
+            gsap.from(item, { scrollTrigger: { trigger: item, start: 'top 85%' }, opacity: 0, x: -30, duration: 0.6, delay: i * 0.1, ease: 'power3.out' });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyppr · FAQ</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.1/dist/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #06060A;
+            --surface: #101018;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --text: #F0F0F5;
+            --text-2: #9898A8;
+            --text-3: #5A5A6E;
+            --cyan: #00E5FF;
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
+        }
+
+        .cursor.active {
+            width: 50px;
+            height: 50px;
+            border-color: var(--cyan);
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        #hero-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transition: background 0.4s;
+        }
+
+        .nav.scrolled {
+            background: rgba(6, 6, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .nav-logo img {
+            height: 36px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--cyan);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Main */
+        main {
+            position: relative;
+            z-index: 1;
+            padding-top: 10rem;
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 6rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 5rem;
+            padding: 0 2rem;
+        }
+
+        .kicker {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-2);
+        }
+
+        /* FAQ Accordion */
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 0 2rem;
+        }
+
+        .faq-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--border-hover);
+        }
+
+        .faq-q {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            padding: 1.5rem 2rem;
+            color: var(--text);
+            font-size: 1.1rem;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-q i {
+            color: var(--cyan);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .faq-item.open .faq-q i {
+            transform: rotate(180deg);
+        }
+
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .faq-a-inner {
+            padding: 0 2rem 1.5rem;
+            color: var(--text-2);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            border-top: 1px solid transparent;
+        }
+
+        .faq-item.open .faq-a-inner {
+            border-color: var(--border);
+            padding-top: 1.5rem;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            color: var(--cyan);
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 5rem 2rem 2rem;
+            margin-top: 4rem;
+            position: relative;
+            z-index: 1;
+            font-family: var(--font-sans);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-logo img {
+            height: 24px;
+        }
+
+        .footer-desc {
+            color: var(--text-3);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            max-width: 260px;
+        }
+
+        .footer-col h5 {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--text);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 4rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-3);
+            font-size: 0.8rem;
+        }
+
+        @media(max-width:900px) {
+            .nav-links {
+                display: none;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .cursor,
+            .cursor-dot {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+
+        @media(max-width:600px) {
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <canvas id="hero-canvas"></canvas>
+
+    <nav class="nav" id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo"><img src="assets/logo.png" alt="Zyppr"
+                    onerror="this.style.display='none'"></a>
+            <div class="nav-links">
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">P2P</a>
+                <a href="lattice-wire.html">Lattice-Wire</a>
+                <a href="docs.html">Docs</a>
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <a href="http://localhost:8080/login"
+                    style="color:var(--text-2); text-decoration:none; font-size:0.85rem; font-weight:500; text-transform:uppercase;">Log
+                    in</a>
+                <a href="http://localhost:8080/signup"
+                    style="background:#fff; color:#000; padding:0.5rem 1.2rem; border-radius:100px; text-decoration:none; font-size:0.85rem; font-weight:600; text-transform:uppercase;">Sign
+                    Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <span class="kicker fade-up">Knowledge Base</span>
+            <h1 class="fade-up">Frequently Asked Questions</h1>
+            <p class="subtitle fade-up">Everything you need to know about Zyppr, our protocols, and features.</p>
+        </div>
+
+        <div class="faq-list">
+            <div class="faq-item fade-up">
+                <button class="faq-q">What protocols does Zyppr support? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        Zyppr supports <strong>HTTP, HTTPS, TCP, and UDP</strong> protocols. This covers web servers,
+                        databases (PostgreSQL, MySQL), SSH, RDP, game servers, IoT devices, DNS forwarding, VoIP, and
+                        any custom protocol. All HTTP tunnels are automatically secured with TLS certificates.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item fade-up">
+                <button class="faq-q">Can I tunnel UDP traffic? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        Yes! Zyppr is the <strong>only tunneling platform that supports UDP tunneling</strong>. You can
+                        tunnel game servers (Minecraft on port 25565), DNS (port 53), VoIP, IoT sensor data, and any
+                        UDP-based protocol using <code>zyppr tunnel 25565 --udp</code> or the zero-download bridge.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item fade-up">
+                <button class="faq-q">What is the difference between SSH and CLI tunneling? <i
+                        class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        <strong>SSH method:</strong> Zero-download. Works on any machine with a terminal. Run a standard
+                        SSH command and your tunnel is live. No binary to install. Supports HTTP and TCP.<br><br>
+                        <strong>CLI binary:</strong> Download the <code>zyppr</code> binary for the fastest experience.
+                        Uses QUIC transport (UDP-based, faster than TCP), supports HTTP/TCP/UDP, auto-reconnect,
+                        config-as-code, and P2P mesh.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item fade-up">
+                <button class="faq-q">How secure are the tunnels? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        Extremely secure. Every tunnel uses end-to-end encryption with cryptographic verification.
+                        Additionally, our AI Gateway detects SQL injection, XSS, specific paths, and suspicious activity
+                        in real-time. You can also add password protection, rate limiting, and IP-based blocking.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item fade-up">
+                <button class="faq-q">Can I use my own custom domain? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        Yes! On the Pro (Beam) plan and above, you can bring your own domain. Simply add a CNAME record
+                        pointing to our server, and Zyppr automatically provisions and auto-renews a Let's Encrypt TLS
+                        certificate.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item fade-up">
+                <button class="faq-q">How does P2P Mesh work? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        P2P Mesh connects two machines directly via UDP hole punching, bypassing the server entirely.
+                        Our server acts as a signaling mechanism to exchange NAT information. This results in near-zero
+                        added latency for direct connections.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item fade-up">
+                <button class="faq-q">What is Chaos Engineering? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        Chaos Engineering lets you inject faults into your tunnel to test your application's resilience.
+                        You can add artificial latency (e.g., 500ms), configure a percentage of requests to return
+                        errors (e.g., 5% return 500), or simulate network issues.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item fade-up">
+                <button class="faq-q">How do webhook breakpoints work? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        Webhook breakpoints pause an incoming HTTP request mid-flight. When enabled, the next request
+                        hitting your tunnel is held. You can inspect the full request (headers, body, method), modify
+                        it, and then release it to your server.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item fade-up">
+                <button class="faq-q">What is DB Studio? <i class="fas fa-chevron-down"></i></button>
+                <div class="faq-a">
+                    <div class="faq-a-inner">
+                        DB Studio is a built-in web-based SQL browser for your tunneled databases. You can connect to
+                        PostgreSQL, MySQL, or SQLite databases running on your localhost, browse schemas and tables, and
+                        execute read-only SQL queries from your UI.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div>
+                <a href="index.html" class="footer-logo">Zyppr</a>
+                <p class="footer-desc">The platform for developers to connect, route, and secure their environments
+                    effortlessly.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Products</h5><a href="tunnel.html">Zyppr Tunnel</a><a href="p2p.html">Zyppr P2P</a><a
+                    href="lattice-wire.html">LatticeWire</a>
+            </div>
+            <div class="footer-col">
+                <h5>Company</h5><a href="founder.html">Founder's Note</a><a href="about.html">Our Story</a>
+            </div>
+            <div class="footer-col">
+                <h5>Resources</h5><a href="docs.html">Documentation</a><a href="faq.html">FAQ</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 Zyppr Inc.</div>
+            <div>Made with ❤️ in Dubai</div>
+        </div>
+    </footer>
+
+    <script>
+        // LENIS
+        const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // Background
+        (function () {
+            const canvas = document.getElementById('hero-canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 50;
+
+            const N = 100;
+            const pos = new Float32Array(N * 3);
+            for (let i = 0; i < N; i++) {
+                pos[i * 3] = (Math.random() - 0.5) * 100;
+                pos[i * 3 + 1] = (Math.random() - 0.5) * 100;
+                pos[i * 3 + 2] = (Math.random() - 0.5) * 100;
+            }
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const mat = new THREE.PointsMaterial({ color: 0x00E5FF, size: 0.5, transparent: true, opacity: 0.5 });
+            const pts = new THREE.Points(geo, mat);
+            scene.add(pts);
+
+            let ty = 0;
+            (function animate() {
+                requestAnimationFrame(animate);
+                ty += 0.001;
+                pts.rotation.y = ty;
+                renderer.render(scene, camera);
+            })();
+            window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+        })();
+
+        // CURSOR
+        const cursor = document.getElementById('cursor'), cursorDot = document.getElementById('cursor-dot');
+        let cx = 0, cy = 0, ddx = 0, ddy = 0;
+        document.addEventListener('mousemove', e => { ddx = e.clientX; ddy = e.clientY; });
+        (function mc() { cx += (ddx - cx) * 0.15; cy += (ddy - cy) * 0.15; if (cursor) { cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px'; } if (cursorDot) { cursorDot.style.left = ddx + 'px'; cursorDot.style.top = ddy + 'px'; } requestAnimationFrame(mc); })();
+        document.querySelectorAll('a, button').forEach(el => { el.addEventListener('mouseenter', () => cursor && cursor.classList.add('active')); el.addEventListener('mouseleave', () => cursor && cursor.classList.remove('active')); });
+
+        // GSAP Nav & Fade Setup
+        ScrollTrigger.create({ start: 'top -80', onUpdate: s => document.getElementById('navbar').classList.toggle('scrolled', s.progress > 0) });
+
+        gsap.utils.toArray('.fade-up').forEach((el, i) => {
+            gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 95%' }, opacity: 0, y: 20, duration: 0.6, delay: Math.min(i * 0.1, 0.4), ease: 'power3.out' });
+        });
+
+        // Accordion Script
+        document.querySelectorAll('.faq-q').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.parentElement;
+                const answer = item.querySelector('.faq-a');
+
+                // close others
+                document.querySelectorAll('.faq-item.open').forEach(openItem => {
+                    if (openItem !== item) {
+                        openItem.classList.remove('open');
+                        openItem.querySelector('.faq-a').style.maxHeight = '0px';
+                    }
+                });
+
+                item.classList.toggle('open');
+                if (item.classList.contains('open')) {
+                    answer.style.maxHeight = answer.scrollHeight + 40 + 'px'; // +40 for top padding
+                } else {
+                    answer.style.maxHeight = '0px';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

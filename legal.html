@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyppr · Terms of Service</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.1/dist/lenis.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #06060A;
+            --surface: #101018;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --text: #F0F0F5;
+            --text-2: #9898A8;
+            --text-3: #5A5A6E;
+            --cyan: #00E5FF;
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .cursor.active {
+            width: 50px;
+            height: 50px;
+            border-color: var(--cyan);
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(6, 6, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .nav-logo img {
+            height: 36px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding-top: 10rem;
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 6rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 0 2rem;
+        }
+
+        .kicker {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 400;
+        }
+
+        .legal {
+            padding: 0 2rem;
+        }
+
+        .legal h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .legal p {
+            color: var(--text-2);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .legal ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .legal li {
+            color: var(--text-2);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .legal-meta {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-3);
+        }
+
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-3);
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media(max-width:900px) {
+            .nav-links {
+                display: none;
+            }
+
+            .cursor,
+            .cursor-dot {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo"><img src="assets/logo.png" alt="Zyppr"
+                    onerror="this.style.display='none'"></a>
+            <div class="nav-links">
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">P2P</a>
+                <a href="lattice-wire.html">Lattice-Wire</a>
+                <a href="docs.html">Docs</a>
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <a href="http://localhost:8080/signup"
+                    style="background:#fff; color:#000; padding:0.5rem 1.2rem; border-radius:100px; text-decoration:none; font-size:0.85rem; font-weight:600; text-transform:uppercase;">Sign
+                    Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <span class="kicker fade-up">Agreement</span>
+            <h1 class="fade-up">Terms of Service</h1>
+        </div>
+
+        <div class="legal">
+            <p class="fade-up">Welcome to Zyppr. By accessing or using our website and networking services, you agree to
+                be bound by these Terms.</p>
+
+            <h3 class="fade-up">1. Acceptable Use</h3>
+            <p class="fade-up">You agree not to use Zyppr for any unlawful purpose, including but not limited to:</p>
+            <ul class="fade-up">
+                <li>Phishing or social engineering attacks.</li>
+                <li>Hosting malware, viruses, or harmful code.</li>
+                <li>Avoiding IP bans or restrictions on other platforms.</li>
+                <li>Sharing illegal content or materials.</li>
+            </ul>
+
+            <h3 class="fade-up">2. Service Availability</h3>
+            <p class="fade-up">While we strive for 99.9% uptime, Zyppr is provided "as is" and "as available". We do not
+                guarantee that the service will be uninterrupted or error-free. We reserve the right to modify or
+                discontinue the service at any time.</p>
+
+            <h3 class="fade-up">3. Account Security</h3>
+            <p class="fade-up">You are responsible for maintaining the confidentiality of your authentication tokens and
+                tunnel credentials. You must notify us immediately of any unauthorized use of your account.</p>
+
+            <h3 class="fade-up">4. Limitation of Liability</h3>
+            <p class="fade-up">To the maximum extent permitted by law, Zyppr Inc. shall not be liable for any indirect,
+                incidental, or consequential damages arising out of your use of the service.</p>
+
+            <div class="legal-meta fade-up">Last Updated: January 1, 2026</div>
+        </div>
+    </main>
+
+    <footer class="footer">&copy; 2026 Zyppr Inc. • Made with ❤️ in Dubai.</footer>
+
+    <script>
+        const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        const cursor = document.getElementById('cursor'), cursorDot = document.getElementById('cursor-dot');
+        let cx = 0, cy = 0, ddx = 0, ddy = 0;
+        document.addEventListener('mousemove', e => { ddx = e.clientX; ddy = e.clientY; });
+        (function mc() { cx += (ddx - cx) * 0.15; cy += (ddy - cy) * 0.15; if (cursor) { cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px'; } if (cursorDot) { cursorDot.style.left = ddx + 'px'; cursorDot.style.top = ddy + 'px'; } requestAnimationFrame(mc); })();
+        document.querySelectorAll('a').forEach(el => { el.addEventListener('mouseenter', () => cursor && cursor.classList.add('active')); el.addEventListener('mouseleave', () => cursor && cursor.classList.remove('active')); });
+
+        gsap.utils.toArray('.fade-up').forEach((el, i) => {
+            gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 95%' }, opacity: 0, y: 15, duration: 0.6, delay: Math.min(i * 0.05, 0.3), ease: 'power3.out' });
+        });
+    </script>
+</body>
+
+</html>

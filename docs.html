@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en" class="lenis-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyppr · Documentation</title>
+    <meta name="description"
+        content="Complete documentation for Zyppr Tunnels — installation, transport methods, all 29 features, CLI reference, and API guide.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.1/dist/lenis.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --bg: #06080A;
+            --surface: #101318;
+            --surface-2: #181C24;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.18);
+            --text: #F0F0F5;
+            --text-2: #9898A8;
+            --text-3: #5A5A6E;
+            --cyan: #00E5FF;
+            --green: #22C55E;
+            --purple: #A855F7;
+            --gradient: linear-gradient(135deg, #00E5FF, #A855F7);
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
+        }
+
+        .cursor.active {
+            width: 50px;
+            height: 50px;
+            border-color: var(--cyan);
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transition: background 0.4s;
+            background: rgba(6, 8, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .nav-logo img {
+            height: 36px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--cyan);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            cursor: none;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Footer override for Docs & API */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 5rem 2rem 2rem;
+            margin-top: 4rem;
+            position: relative;
+            z-index: 1;
+            background: var(--surface);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-logo img {
+            height: 24px;
+        }
+
+        .footer-desc {
+            color: var(--text-3);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            max-width: 260px;
+        }
+
+        .footer-col h5 {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--green);
+            transform: translateX(5px);
+        }
+
+        /* Layout */
+        .docs-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10rem 3rem 4rem;
+        }
+
+        .docs-sidebar {
+            position: sticky;
+            top: 8rem;
+            height: calc(100vh - 10rem);
+            overflow-y: auto;
+            padding-right: 1.5rem;
+        }
+
+        .docs-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .docs-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .doc-nav-group {
+            margin-bottom: 2.5rem;
+        }
+
+        .doc-nav-group h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-3);
+            margin-bottom: 1rem;
+            font-family: var(--font-mono);
+        }
+
+        .doc-link {
+            display: block;
+            padding: 0.5rem 0 0.5rem 1rem;
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.95rem;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .doc-link:hover,
+        .doc-link.active {
+            color: var(--cyan);
+            border-left-color: var(--cyan);
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.08) 0%, transparent 100%);
+        }
+
+        .docs-content {
+            background: rgba(16, 19, 24, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 4rem 5rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .doc-article {
+            margin-bottom: 4rem;
+        }
+
+        .doc-article h2 {
+            font-family: var(--font-serif);
+            font-size: 3.2rem;
+            font-weight: 400;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .doc-article h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 2.5rem 0 1rem;
+        }
+
+        .doc-article p,
+        .doc-article ul {
+            color: var(--text-2);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .doc-article ul {
+            padding-left: 1.5rem;
+        }
+
+        .doc-article ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .mono-kicker {
+            font-family: var(--font-mono);
+            color: var(--cyan);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .doc-code-block {
+            background: #040507;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 1.5rem 0 2.5rem;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .doc-code-block .keyword {
+            color: var(--purple);
+        }
+
+        .doc-code-block .comment {
+            color: var(--text-3);
+        }
+
+        .term-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 4rem 0;
+        }
+
+        @media(max-width: 1000px) {
+            .docs-layout {
+                grid-template-columns: 1fr;
+                padding: 8rem 2rem 2rem;
+            }
+
+            .docs-sidebar {
+                position: relative;
+                top: 0;
+                height: auto;
+                margin-bottom: 2rem;
+                display: none;
+                /* Hide on mobile for now, or could make a dropdown */
+            }
+
+            .docs-content {
+                padding: 2.5rem 2rem;
+            }
+
+            .doc-article h2 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <!-- Nav -->
+    <nav class="nav" id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo"><img src="assets/logo.png" alt="Zyppr"
+                    onerror="this.style.display='none'"></a>
+            <div class="nav-links">
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">P2P</a>
+                <a href="lattice-wire.html">Lattice-Wire</a>
+                <a href="docs.html" class="active">Docs</a>
+                <a href="api.html">API</a>
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <a href="http://localhost:8080/login"
+                    style="color:var(--text-2); text-decoration:none; font-size:0.85rem; font-weight:500; text-transform:uppercase;">Log
+                    in</a>
+                <a href="http://localhost:8080/signup" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="docs-layout">
+            <!-- Sidebar -->
+            <aside class="docs-sidebar">
+                <div class="doc-nav-group">
+                    <h4>Getting Started</h4>
+                    <a href="#install" class="doc-link active">Installation</a>
+                    <a href="#zero-download" class="doc-link">Zero-Download (SSH)</a>
+                    <a href="#auth" class="doc-link">Authentication</a>
+                    <a href="#quickstart" class="doc-link">Quick Start</a>
+                    <a href="#config-code" class="doc-link">Config-as-Code</a>
+                </div>
+                <div class="doc-nav-group">
+                    <h4>Transport Methods</h4>
+                    <a href="#ssh-transport" class="doc-link">SSH Transport</a>
+                    <a href="#quic-transport" class="doc-link">QUIC Transport (CLI)</a>
+                    <a href="#browser-tunnel" class="doc-link">Browser Tunnel</a>
+                    <a href="#udp-bridge" class="doc-link">UDP Bridge</a>
+                </div>
+                <div class="doc-nav-group">
+                    <h4>Tunnel Types</h4>
+                    <a href="#http-tunnels" class="doc-link">HTTP/HTTPS Tunnels</a>
+                    <a href="#tcp-tunnels" class="doc-link">TCP Tunnels</a>
+                    <a href="#udp-tunnels" class="doc-link">UDP Tunnels</a>
+                    <a href="#custom-domains" class="doc-link">Custom Domains + SSL</a>
+                </div>
+                <div class="doc-nav-group">
+                    <h4>Developer Features</h4>
+                    <a href="#inspector" class="doc-link">Request Inspector</a>
+                    <a href="#replay" class="doc-link">Request Replay</a>
+                    <a href="#snapshots" class="doc-link">Snapshots</a>
+                    <a href="#auto-swagger" class="doc-link">Auto-Swagger</a>
+                    <a href="#webhooks" class="doc-link">Webhooks</a>
+                    <a href="#breakpoints" class="doc-link">Webhook Breakpoints</a>
+                    <a href="#db-studio" class="doc-link">DB Studio</a>
+                </div>
+                <div class="doc-nav-group">
+                    <h4>Security</h4>
+                    <a href="#e2e" class="doc-link">E2E Encryption</a>
+                    <a href="#ai-gateway" class="doc-link">AI Gateway</a>
+                    <a href="#rate-limit" class="doc-link">Rate Limiting</a>
+                    <a href="#header-rules" class="doc-link">Header Rules</a>
+                </div>
+                <div class="doc-nav-group">
+                    <h4>Advanced</h4>
+                    <a href="#edge-functions" class="doc-link">Edge Functions</a>
+                    <a href="#edge-mesh" class="doc-link">Edge Mesh</a>
+                    <a href="#chaos" class="doc-link">Chaos Engineering</a>
+                    <a href="#p2p" class="doc-link">P2P Mesh</a>
+                    <a href="#sharing" class="doc-link">Tunnel Sharing</a>
+                    <a href="#health" class="doc-link">Health Checks</a>
+                    <a href="#kv" class="doc-link">KV Store</a>
+                </div>
+                <div class="doc-nav-group">
+                    <h4>CLI Reference</h4>
+                    <a href="#cli-tunnel" class="doc-link">zyppr tunnel</a>
+                    <a href="#cli-up" class="doc-link">zyppr up</a>
+                    <a href="#cli-p2p" class="doc-link">zyppr p2p</a>
+                    <a href="#cli-auth" class="doc-link">zyppr auth</a>
+                </div>
+            </aside>
+
+            <!-- Content -->
+            <section class="docs-content">
+
+                <!-- ===================== GETTING STARTED ===================== -->
+
+                <article id="install" class="doc-article">
+                    <span class="mono-kicker">GETTING STARTED</span>
+                    <h2>Installation</h2>
+                    <p>Zyppr is available as a single, self-contained binary for macOS, Linux, and Windows. No runtime
+                        dependencies (no Node.js, no Python).</p>
+
+                    <h3>macOS / Linux</h3>
+                    <div class="doc-code-block">
+                        <span class="keyword">curl</span> -s https://cdn.zyppr.online/install.sh | bash
+                    </div>
+
+                    <h3>Windows (PowerShell)</h3>
+                    <div class="doc-code-block">
+                        <span class="keyword">iwr</span> -useb https://cdn.zyppr.online/install.ps1 | <span
+                            class="keyword">iex</span>
+                    </div>
+
+                    <h3>npm (alternative)</h3>
+                    <div class="doc-code-block">
+                        <span class="keyword">npm</span> install -g zyppr
+                    </div>
+
+                    <p>Verify installation:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> version<br>
+                        <span class="comment"># → zyppr 1.0.0 (QUIC tunnel client)</span>
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="zero-download" class="doc-article">
+                    <h2>Zero-Download Method (SSH)</h2>
+                    <p>Don't want to install anything? Zyppr supports standard SSH tunneling — works on every OS since
+                        2005. No download, no signup, no binary needed.</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># Free tier (no account needed)</span><br>
+                        <span class="keyword">ssh</span> -p 443 -R0:localhost:3000 qr@free.zyppr.online<br><br>
+                        <span class="comment"># With your auth token (Pro features)</span><br>
+                        <span class="keyword">ssh</span> -p 443 -R0:localhost:3000 YOUR_TOKEN@tunl.zyppr.xyz
+                    </div>
+                    <p>This is a <strong>world-first dual architecture</strong> — both a CLI binary (QUIC-based) and a
+                        zero-download SSH method, running simultaneously.</p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="auth" class="doc-article">
+                    <h2>Authentication</h2>
+                    <p>Save your auth token to unlock all Pro features:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> auth YOUR_TOKEN<br>
+                        <span class="comment"># → Token saved to ~/.zyppr/config</span>
+                    </div>
+                    <p>Get your token from the <a href="http://localhost:8080"
+                            style="color: var(--accent-cyan);">Dashboard</a> after signing up.</p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="quickstart" class="doc-article">
+                    <h2>Quick Start</h2>
+                    <p>Expose a local web server to the public internet:</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># HTTP tunnel on port 3000</span><br>
+                        <span class="keyword">zyppr</span> tunnel 3000<br><br>
+                        <span class="comment"># Multiple ports at once</span><br>
+                        <span class="keyword">zyppr</span> tunnel 3000 8080<br><br>
+                        <span class="comment"># TCP tunnel (databases, SSH, RDP)</span><br>
+                        <span class="keyword">zyppr</span> tunnel 5432 --tcp<br><br>
+                        <span class="comment"># UDP tunnel (game servers, IoT)</span><br>
+                        <span class="keyword">zyppr</span> tunnel 25565 --udp<br><br>
+                        <span class="comment"># With basic auth</span><br>
+                        <span class="keyword">zyppr</span> tunnel 3000 --auth admin:secret
+                    </div>
+
+                    <p>Output:</p>
+                    <div class="doc-code-block">
+                        <span class="string">Tunnel Status:</span> <span class="function">Online</span><br>
+                        <span class="string">HTTPS:</span> https://cosmic-name.tunl.zyppr.xyz<br>
+                        <span class="string">HTTP:</span> http://cosmic-name.tunl.zyppr.xyz<br>
+                        <span class="string">Latency:</span> 24ms
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="config-code" class="doc-article">
+                    <h2>Config-as-Code</h2>
+                    <p>Define all tunnels in a <code style="color: var(--accent-cyan);">zyppr.yml</code> file and start
+                        everything with <code style="color: var(--accent-cyan);">zyppr up</code>:</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># zyppr.yml</span><br>
+                        <span class="keyword">tunnels:</span><br>
+                        &nbsp; <span class="keyword">web:</span><br>
+                        &nbsp;&nbsp;&nbsp; <span class="string">port:</span> 3000<br>
+                        &nbsp;&nbsp;&nbsp; <span class="string">auth:</span> admin:password<br><br>
+                        &nbsp; <span class="keyword">api:</span><br>
+                        &nbsp;&nbsp;&nbsp; <span class="string">port:</span> 8080<br><br>
+                        &nbsp; <span class="keyword">db:</span><br>
+                        &nbsp;&nbsp;&nbsp; <span class="string">port:</span> 5432<br>
+                        &nbsp;&nbsp;&nbsp; <span class="string">proto:</span> tcp<br><br>
+                        &nbsp; <span class="keyword">game:</span><br>
+                        &nbsp;&nbsp;&nbsp; <span class="string">port:</span> 25565<br>
+                        &nbsp;&nbsp;&nbsp; <span class="string">proto:</span> udp
+                    </div>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> up<br>
+                        <span class="comment"># → 4 tunnels started</span>
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <!-- ===================== TRANSPORT METHODS ===================== -->
+
+                <article id="ssh-transport" class="doc-article">
+                    <span class="mono-kicker">TRANSPORT METHODS</span>
+                    <h2>SSH Transport</h2>
+                    <p>Works on any machine with a terminal. No downloads. No signup for the free tier.</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># HTTP tunnel</span><br>
+                        <span class="keyword">ssh</span> -p 443 -R0:localhost:3000 TOKEN@tunl.zyppr.xyz<br><br>
+                        <span class="comment"># TCP tunnel (add +tcp suffix)</span><br>
+                        <span class="keyword">ssh</span> -p 443 -R0:localhost:5432 TOKEN+tcp@tunl.zyppr.xyz<br><br>
+                        <span class="comment"># UDP tunnel (add +udp suffix)</span><br>
+                        <span class="keyword">ssh</span> -p 443 -R0:localhost:25565 TOKEN+udp@tunl.zyppr.xyz
+                    </div>
+                    <p><strong>Features:</strong> Live terminal UI with QR code, real-time traffic stats, color-coded
+                        request logs, keybindings (q to quit, h for help).</p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="quic-transport" class="doc-article">
+                    <h2>QUIC Transport (CLI Binary)</h2>
+                    <p>The <code style="color: var(--accent-cyan);">zyppr</code> CLI uses QUIC — a modern UDP-based
+                        transport protocol that's faster than TCP. Benefits include:</p>
+                    <ul style="color: #ccc; line-height: 2;">
+                        <li>0-RTT connection establishment</li>
+                        <li>Built-in encryption (TLS 1.3)</li>
+                        <li>Multiplexed streams (no head-of-line blocking)</li>
+                        <li>Auto-reconnect on network changes</li>
+                    </ul>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> tunnel 3000 --server tunl.zyppr.xyz:4443
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="browser-tunnel" class="doc-article">
+                    <h2>Browser Tunnel</h2>
+                    <p>Tunnel directly from your web browser — no download, no CLI, no terminal. Navigate to your tunnel
+                        URL's <code style="color: var(--accent-cyan);">/tunnel/ws</code> endpoint, paste your token, and
+                        your localhost is live.</p>
+                    <p><strong>Supports:</strong> HTTP requests, Server-Sent Events (SSE), chunked transfer encoding,
+                        auto-reconnect, live request/byte counters, connection heartbeat.</p>
+                    <p><em>This is a world-first feature — no other tunneling platform offers browser-based tunnel
+                            clients.</em></p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="udp-bridge" class="doc-article">
+                    <h2>UDP Bridge (Zero-Download)</h2>
+                    <p>Tunnel UDP traffic without installing any binary. Uses a lightweight Node.js bridge script:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">node</span> -e "$(curl -sL tunl.zyppr.xyz/bridge.js)" <span
+                            class="string">25565</span> <span class="string">YOUR_TOKEN</span>
+                    </div>
+                    <p><strong>Use cases:</strong> Minecraft servers, DNS forwarding, VoIP, IoT sensor data, any
+                        UDP-based protocol.</p>
+                    <p><em>World-first — no other tunneling service offers zero-download UDP tunneling.</em></p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <!-- ===================== TUNNEL TYPES ===================== -->
+
+                <article id="http-tunnels" class="doc-article">
+                    <span class="mono-kicker">TUNNEL TYPES</span>
+                    <h2>HTTP/HTTPS Tunnels</h2>
+                    <p>The default tunnel type. Every HTTP tunnel gets automatic HTTPS with a valid TLS certificate.</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> tunnel 3000<br>
+                        <span class="comment"># → https://cosmic-name.tunl.zyppr.xyz</span>
+                    </div>
+                    <p>Headers forwarded: <code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code>,
+                        <code>X-Real-IP</code>. WebSocket upgrade is supported automatically.
+                    </p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="tcp-tunnels" class="doc-article">
+                    <h2>TCP Tunnels</h2>
+                    <p>Expose any TCP service — databases, SSH, RDP, custom protocols:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> tunnel 5432 --tcp<br>
+                        <span class="comment"># → tcp://tunl.zyppr.xyz:54321</span><br><br>
+                        <span class="comment"># Connect from anywhere:</span><br>
+                        <span class="keyword">psql</span> -h tunl.zyppr.xyz -p 54321 -U postgres
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="udp-tunnels" class="doc-article">
+                    <h2>UDP Tunnels</h2>
+                    <p>Expose UDP services — game servers, DNS, IoT devices:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> tunnel 25565 --udp<br>
+                        <span class="comment"># → udp://tunl.zyppr.xyz:25565</span>
+                    </div>
+                    <p><em>Zyppr is the only tunneling platform that supports UDP. ngrok, Cloudflare Tunnel, and Pinggy
+                            do not offer UDP tunneling.</em></p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="custom-domains" class="doc-article">
+                    <h2>Custom Domains + Auto-SSL</h2>
+                    <p>Bring your own domain with automatic Let's Encrypt TLS certificates:</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># 1. Add a CNAME record:</span><br>
+                        <span class="string">tunnel.yourdomain.com</span> → CNAME → <span
+                            class="string">tunl.zyppr.xyz</span><br><br>
+                        <span class="comment"># 2. Register via API:</span><br>
+                        <span class="keyword">POST</span> /api/v1/custom-domain<br>
+                        { "domain": "tunnel.yourdomain.com" }<br><br>
+                        <span class="comment"># 3. SSL is provisioned automatically</span><br>
+                        <span class="function">✓</span> https://tunnel.yourdomain.com → your localhost
+                    </div>
+                    <p>Auto-renewal is included. Certificates are provisioned on first request.</p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <!-- ===================== DEVELOPER FEATURES ===================== -->
+
+                <article id="inspector" class="doc-article">
+                    <span class="mono-kicker">DEVELOPER FEATURES</span>
+                    <h2>Request Inspector</h2>
+                    <p>Every request hitting your tunnel is captured and available via the API:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">GET</span> /api/v1/inspect?token=YOUR_TOKEN<br><br>
+                        <span class="comment"># Returns: method, path, headers, body, status, timing</span>
+                    </div>
+                    <p>View captured requests in the Dashboard or via the REST API. Requests are stored in-memory per
+                        session.</p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="replay" class="doc-article">
+                    <h2>Request Replay</h2>
+                    <p>Replay any captured request — optionally with modifications:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/replay?token=YOUR_TOKEN<br>
+                        {<br>
+                        &nbsp; "method": "POST",<br>
+                        &nbsp; "path": "/api/webhook",<br>
+                        &nbsp; "headers": { "Content-Type": "application/json" },<br>
+                        &nbsp; "body": "{\"event\": \"test\"}"<br>
+                        }
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="snapshots" class="doc-article">
+                    <h2>Snapshots</h2>
+                    <p>Create point-in-time captures of your tunnel's HTTP responses. Persisted to SQLite — survives
+                        server restarts.</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/snapshot?token=YOUR_TOKEN<br>
+                        { "paths": ["/", "/api/users", "/dashboard"] }<br><br>
+                        <span class="comment"># Retrieve snapshot later:</span><br>
+                        <span class="keyword">GET</span> /api/v1/snapshots/snap-abc123/serve?path=/api/users
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="auto-swagger" class="doc-article">
+                    <h2>Auto-Swagger</h2>
+                    <p>Zyppr observes your live traffic and auto-generates OpenAPI 3.0 documentation. Every unique path,
+                        HTTP method, and response code is documented automatically.</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">GET</span> /api/v1/swagger?token=YOUR_TOKEN<br><br>
+                        <span class="comment"># Returns OpenAPI 3.0 JSON with all observed endpoints</span>
+                    </div>
+                    <p>No annotations, no comments, no hand-writing specs. Your API documents itself by usage.</p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="webhooks" class="doc-article">
+                    <h2>Webhooks</h2>
+                    <p>Queue, inspect, and replay incoming webhooks:</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># Enable webhook queuing</span><br>
+                        <span class="keyword">POST</span> /api/v1/webhooks/toggle?token=YOUR_TOKEN<br>
+                        { "enabled": true }<br><br>
+                        <span class="comment"># View queued webhooks</span><br>
+                        <span class="keyword">GET</span> /api/v1/webhooks?token=YOUR_TOKEN<br><br>
+                        <span class="comment"># Replay a webhook</span><br>
+                        <span class="keyword">POST</span> /api/v1/webhooks/replay?token=YOUR_TOKEN<br>
+                        { "id": "wh-abc123" }
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="breakpoints" class="doc-article">
+                    <h2>Webhook Breakpoints</h2>
+                    <p>Pause an incoming request mid-flight. Inspect it. Modify it. Then release it to your server. Like
+                        a debugger breakpoint, but for HTTP traffic.</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># Enable breakpoints</span><br>
+                        <span class="keyword">POST</span> /api/v1/webhooks/breakpoints?token=YOUR_TOKEN<br>
+                        { "enabled": true }<br><br>
+                        <span class="comment"># Paused requests auto-release after 60 seconds</span>
+                    </div>
+                    <p><em>Exclusive to Zyppr — no other tunneling platform offers request breakpoints.</em></p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="db-studio" class="doc-article">
+                    <h2>DB Studio</h2>
+                    <p>A built-in web SQL browser for your tunneled databases. Browse schemas, explore tables, and run
+                        read-only queries — all from your dashboard.</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># Connect to a tunneled database</span><br>
+                        <span class="keyword">POST</span> /api/v1/db-studio/connect?token=YOUR_TOKEN<br>
+                        { "driver": "postgres", "dsn": "postgres://user:pass@localhost:5432/mydb" }<br><br>
+                        <span class="comment"># Browse schema</span><br>
+                        <span class="keyword">GET</span> /api/v1/db-studio/schema?token=YOUR_TOKEN<br><br>
+                        <span class="comment"># Run a query (read-only)</span><br>
+                        <span class="keyword">POST</span> /api/v1/db-studio/query?token=YOUR_TOKEN<br>
+                        { "sql": "SELECT * FROM users LIMIT 10" }
+                    </div>
+                    <p>Supports PostgreSQL, MySQL, and SQLite. <em>World-first in tunneling platforms.</em></p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <!-- ===================== SECURITY ===================== -->
+
+                <article id="e2e" class="doc-article">
+                    <span class="mono-kicker">SECURITY</span>
+                    <h2>E2E Encryption</h2>
+                    <p>Every tunnel session generates a unique cryptographic fingerprint displayed as emoji (🚀🌊💎🔑).
+                        Compare them to verify no MITM interception.</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">GET</span> /api/v1/e2e/verify?token=YOUR_TOKEN<br><br>
+                        <span class="comment"># Returns: { "fingerprint": "🚀🌊💎🔑", "hex": "C768:6856:56E4:E41C"
+                            }</span>
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="ai-gateway" class="doc-article">
+                    <h2>AI Gateway</h2>
+                    <p>Real-time threat detection on your tunnel traffic. Automatically detects and blocks:</p>
+                    <ul style="color: #ccc; line-height: 2;">
+                        <li>SQL Injection attacks</li>
+                        <li>Cross-Site Scripting (XSS)</li>
+                        <li>Path traversal (../../etc/passwd)</li>
+                        <li>Suspicious user agents (scanners, bots)</li>
+                        <li>Command injection attempts</li>
+                    </ul>
+                    <div class="doc-code-block">
+                        <span class="keyword">GET</span> /api/v1/ai-gateway/stats?token=YOUR_TOKEN<br><br>
+                        <span class="comment"># Returns threat summary, blocked count, classifications</span>
+                    </div>
+                    <p><em>World-first — no other tunneling platform has built-in AI threat detection.</em></p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="rate-limit" class="doc-article">
+                    <h2>Rate Limiting</h2>
+                    <p>Protect your tunnel with per-session request limits:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/rate-limit?token=YOUR_TOKEN<br>
+                        { "requests_per_minute": 60, "burst": 10 }
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="header-rules" class="doc-article">
+                    <h2>Header Rules</h2>
+                    <p>Add, remove, or modify response headers without touching your backend:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/header-rules?token=YOUR_TOKEN<br>
+                        {<br>
+                        &nbsp; "action": "set",<br>
+                        &nbsp; "header": "Access-Control-Allow-Origin",<br>
+                        &nbsp; "value": "*"<br>
+                        }
+                    </div>
+                    <p>Common use: CORS headers, security headers (X-Frame-Options, CSP), cache control.</p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <!-- ===================== ADVANCED ===================== -->
+
+                <article id="edge-functions" class="doc-article">
+                    <span class="mono-kicker">ADVANCED</span>
+                    <h2>Edge Functions</h2>
+                    <p>Attach lightweight route handlers to your tunnel — redirect, block, mock, or modify traffic at
+                        the edge:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/edge/rules?token=YOUR_TOKEN<br>
+                        {<br>
+                        &nbsp; "name": "Redirect old paths",<br>
+                        &nbsp; "path": "/old-page",<br>
+                        &nbsp; "action": "redirect",<br>
+                        &nbsp; "target": "/new-page"<br>
+                        }<br><br>
+                        <span class="comment"># Available actions: redirect, block, mock, modify</span><br>
+                        <span class="comment"># Presets: maintenance mode, bot blocking</span>
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="edge-mesh" class="doc-article">
+                    <h2>Edge Mesh</h2>
+                    <p>Create private networks linking multiple developer laptops. Each member's tunnel gets a <code
+                            style="color: var(--accent-cyan);">.zyppr.local</code> hostname:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/mesh/join<br>
+                        { "mesh_id": "team-alpha", "hostname": "backend" }<br><br>
+                        <span class="comment"># Now other team members can access:</span><br>
+                        <span class="function">curl</span> http://backend.zyppr.local/api/users<br><br>
+                        <span class="comment"># View the mesh topology:</span><br>
+                        <span class="keyword">GET</span> /api/v1/mesh/topology?mesh_id=team-alpha
+                    </div>
+                    <p>Includes health tracking (online/offline/degraded), automatic stale member cleanup, and hostname
+                        resolution. <em>World-first in tunneling.</em></p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="chaos" class="doc-article">
+                    <h2>Chaos Engineering</h2>
+                    <p>Inject faults into your tunnel to test your app's resilience:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/chaos?token=YOUR_TOKEN<br>
+                        {<br>
+                        &nbsp; "latency_ms": 500,<br>
+                        &nbsp; "error_rate": 0.05,<br>
+                        &nbsp; "error_code": 500<br>
+                        }<br><br>
+                        <span class="comment"># → 500ms added latency + 5% of requests return 500</span>
+                    </div>
+                    <p>Test timeouts, retry logic, circuit breakers, and fallback behavior before your users do.
+                        <em>Exclusive to Zyppr.</em>
+                    </p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="p2p" class="doc-article">
+                    <h2>P2P Mesh</h2>
+                    <p>Connect two machines directly via UDP hole punching — bypassing the server entirely:</p>
+                    <div class="doc-code-block">
+                        <span class="comment"># On Machine A:</span><br>
+                        <span class="keyword">zyppr</span> p2p --peer my-peer-id --local-port 8080<br><br>
+                        <span class="comment"># On Machine B:</span><br>
+                        <span class="keyword">zyppr</span> p2p --peer my-peer-id --local-port 9090<br><br>
+                        <span class="comment"># → Direct UDP connection established</span><br>
+                        <span class="comment"># → Falls back to server relay if hole punching fails</span>
+                    </div>
+                    <p>The CLI registers with the signaling server, exchanges NAT info, and punches through firewalls.
+                        If direct P2P fails, it automatically falls back to a TURN-like server relay. <em>World-first in
+                            tunneling platforms.</em></p>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="sharing" class="doc-article">
+                    <h2>Tunnel Sharing</h2>
+                    <p>Share tunnel access with teammates via secure, expiring links:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/share/create?token=YOUR_TOKEN<br>
+                        { "access": "read", "ttl": "24h" }<br><br>
+                        <span class="comment"># → Share link: https://tunl.zyppr.xyz/s/abc123</span><br>
+                        <span class="comment"># Max 10 active shares per session</span>
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="health" class="doc-article">
+                    <h2>Health Checks</h2>
+                    <p>Automatic uptime monitoring with branded status pages:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/health/config?token=YOUR_TOKEN<br>
+                        { "path": "/health", "interval": 60 }<br><br>
+                        <span class="comment"># Branded status page:</span><br>
+                        <span class="keyword">GET</span> /health/status (returns branded HTML)
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="kv" class="doc-article">
+                    <h2>KV Store</h2>
+                    <p>Session-scoped key-value storage for edge logic:</p>
+                    <div class="doc-code-block">
+                        <span class="keyword">POST</span> /api/v1/kv?token=YOUR_TOKEN<br>
+                        { "key": "feature_flag", "value": "enabled" }<br><br>
+                        <span class="keyword">GET</span> /api/v1/kv?token=YOUR_TOKEN&key=feature_flag<br><br>
+                        <span class="keyword">DELETE</span> /api/v1/kv?token=YOUR_TOKEN&key=feature_flag
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <!-- ===================== CLI REFERENCE ===================== -->
+
+                <article id="cli-tunnel" class="doc-article">
+                    <span class="mono-kicker">CLI REFERENCE</span>
+                    <h2>zyppr tunnel</h2>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> tunnel &lt;port&gt; [ports...] [flags]<br><br>
+                        <span class="comment">Flags:</span><br>
+                        &nbsp; --tcp &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TCP tunnel<br>
+                        &nbsp; --udp &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UDP tunnel<br>
+                        &nbsp; --auth user:pass &nbsp; Password protection<br>
+                        &nbsp; --server host:port Custom server<br>
+                        &nbsp; --token TOKEN &nbsp;&nbsp;&nbsp;&nbsp; Override saved token<br>
+                        &nbsp; --no-reconnect &nbsp;&nbsp;&nbsp; Disable auto-reconnect
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="cli-up" class="doc-article">
+                    <h2>zyppr up</h2>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> up [--config path/to/zyppr.yml]<br><br>
+                        <span class="comment"># Start all tunnels defined in zyppr.yml</span>
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="cli-p2p" class="doc-article">
+                    <h2>zyppr p2p</h2>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> p2p --peer &lt;peer-id&gt; --local-port &lt;port&gt;<br><br>
+                        <span class="comment">Flags:</span><br>
+                        &nbsp; --peer ID &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Peer identifier<br>
+                        &nbsp; --local-port PORT &nbsp; Local port to forward<br>
+                        &nbsp; --server host:port &nbsp; Signaling server
+                    </div>
+                </article>
+
+                <div class="term-divider"></div>
+
+                <article id="cli-auth" class="doc-article">
+                    <h2>zyppr auth</h2>
+                    <div class="doc-code-block">
+                        <span class="keyword">zyppr</span> auth &lt;token&gt;<br><br>
+                        <span class="comment"># Save authentication token to ~/.zyppr/config</span>
+                    </div>
+                </article>
+
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div>
+                <a href="index.html" class="footer-logo">⚡ Zyppr</a>
+                <p class="footer-desc">The platform for developers to connect, route, and secure their environments
+                    effortlessly.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Platform</h5>
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">Zyppr P2P</a>
+                <a href="lattice-wire.html">Lattice-Wire</a>
+                <a href="index.html#pricing">Pricing</a>
+            </div>
+            <div class="footer-col">
+                <h5>Resources</h5>
+                <a href="docs.html">Documentation</a>
+                <a href="api.html">API Reference</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-col">
+                <h5>Company</h5>
+                <a href="founder.html">Founder's Note</a>
+                <a href="about.html">About Us</a>
+                <a href="mailto:hello@zyppr.online">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy to clipboard functionality if there were any commands
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mouse follower
+            const cursor = document.getElementById('cursor');
+            const cursorDot = document.getElementById('cursor-dot');
+
+            if (cursor && cursorDot) {
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                    cursorDot.style.left = e.clientX + 'px';
+                    cursorDot.style.top = e.clientY + 'px';
+                });
+
+                document.querySelectorAll('a, button, .doc-link').forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+                });
+            }
+
+            // Navbar scroll
+            const nav = document.getElementById('navbar');
+            if (nav) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                });
+            }
+        });
+        // Sidebar active state based on scroll position
+        const docLinks = document.querySelectorAll('.doc-link');
+        const docArticles = document.querySelectorAll('.doc-article');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    docLinks.forEach(l => l.classList.remove('active'));
+                    const activeLink = document.querySelector(`.doc-link[href="#${entry.target.id}"]`);
+                    if (activeLink) activeLink.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-20% 0px -60% 0px' });
+
+        docArticles.forEach(article => observer.observe(article));
+
+        // Click handler
+        docLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                docLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

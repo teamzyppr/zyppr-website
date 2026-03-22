@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en" class="lenis-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyppr · API Reference</title>
+    <meta name="description"
+        content="Complete REST API reference for Zyppr Tunnels — 40+ endpoints covering tunnels, webhooks, security, mesh, P2P, and more.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.1/dist/lenis.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --bg: #06080A;
+            --surface: #101318;
+            --surface-2: #181C24;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.18);
+            --text: #F0F0F5;
+            --text-2: #9898A8;
+            --text-3: #5A5A6E;
+            --cyan: #00E5FF;
+            --green: #22C55E;
+            --purple: #A855F7;
+            --gradient: linear-gradient(135deg, #00E5FF, #A855F7);
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Crimson Pro', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
+        }
+
+        .cursor.active {
+            width: 50px;
+            height: 50px;
+            border-color: var(--cyan);
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            transition: background 0.4s;
+            background: rgba(6, 8, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .nav-logo img {
+            height: 36px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--cyan);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            cursor: none;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Footer override for Docs & API */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 5rem 2rem 2rem;
+            margin-top: 4rem;
+            position: relative;
+            z-index: 1;
+            background: var(--surface);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-logo img {
+            height: 24px;
+        }
+
+        .footer-desc {
+            color: var(--text-3);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            max-width: 260px;
+        }
+
+        .footer-col h5 {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--green);
+            transform: translateX(5px);
+        }
+
+        /* API specific */
+        .api-endpoint {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            transition: 0.3s;
+        }
+
+        .api-endpoint:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            background: var(--surface-2);
+        }
+
+        .api-method {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 6px;
+            margin-right: 1rem;
+        }
+
+        .method-get {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .method-post {
+            background: rgba(0, 229, 255, 0.1);
+            color: #00E5FF;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        .method-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .method-put {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .api-path {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .api-desc {
+            color: var(--text-2);
+            font-size: 0.9rem;
+            margin-top: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .api-section-title {
+            font-family: var(--font-sans);
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+        }
+
+        .auth-note {
+            background: var(--surface);
+            border: 1px solid var(--cyan);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-2);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-note::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--cyan);
+        }
+
+        .auth-note code {
+            color: var(--cyan);
+            font-family: var(--font-mono);
+            background: rgba(0, 229, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .mono-kicker {
+            font-family: var(--font-mono);
+            color: var(--cyan);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <!-- Nav -->
+    <nav class="nav" id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo"><img src="assets/logo.png" alt="Zyppr"
+                    onerror="this.style.display='none'"></a>
+            <div class="nav-links">
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">P2P</a>
+                <a href="lattice-wire.html">Lattice-Wire</a>
+                <a href="docs.html">Docs</a>
+                <a href="api.html" class="active">API</a>
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <a href="http://localhost:8080/login"
+                    style="color:var(--text-2); text-decoration:none; font-size:0.85rem; font-weight:500; text-transform:uppercase;">Log
+                    in</a>
+                <a href="http://localhost:8080/signup" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div style="max-width: 900px; margin: 0 auto; padding: 10rem 2rem 4rem;">
+
+            <span class="mono-kicker">REST API</span>
+            <h1 style="font-family: var(--font-serif); font-size: 4rem; font-weight: 400; margin-bottom: 1rem;">API
+                Reference <span class="gradient-text">v2.0</span>
+            </h1>
+            <p
+                style="color: var(--text-2); font-size: 1.1rem; margin-bottom: 3rem; max-width: 600px; line-height: 1.6;">
+                Complete REST API for Zyppr Tunnels. All endpoints return JSON. Authentication is required for most
+                endpoints.</p>
+
+            <div class="auth-note">
+                <strong style="color: white;"><i class="fas fa-key" style="margin-right: 0.5rem;"></i>
+                    Authentication</strong><br>
+                Include your token as a query parameter: <code>?token=YOUR_TOKEN</code><br>
+                Or as a header: <code>Authorization: Bearer YOUR_TOKEN</code>
+            </div>
+
+            <!-- ===== SESSION MANAGEMENT ===== -->
+            <h3 class="api-section-title" style="color: var(--accent-cyan);"><i class="fas fa-plug"
+                    style="margin-right: 0.5rem;"></i> Session Management</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/status</span>
+                <p class="api-desc">Get current server status and version info.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/tunnels</span>
+                <p class="api-desc">List all active tunnels for the authenticated user. Returns session ID, URL,
+                    protocol, port, uptime, and traffic stats.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/kill</span>
+                <p class="api-desc">Kill an active tunnel session. Body: <code>{ "session_id": "..." }</code></p>
+            </div>
+
+            <!-- ===== INSPECTOR & REPLAY ===== -->
+            <h3 class="api-section-title" style="color: #a78bfa;"><i class="fas fa-magnifying-glass"
+                    style="margin-right: 0.5rem;"></i> Inspector & Replay</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/inspect</span>
+                <p class="api-desc">Get captured requests for a session. Returns method, path, headers, body, status
+                    code, and timing for each request.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/replay</span>
+                <p class="api-desc">Replay a captured request, optionally with modifications. Body:
+                    <code>{ "method": "POST", "path": "/api/test", "headers": {}, "body": "..." }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/replay/history</span>
+                <p class="api-desc">Get replay history for a session — all replayed requests with original and modified
+                    versions.</p>
+            </div>
+
+            <!-- ===== WEBHOOKS ===== -->
+            <h3 class="api-section-title" style="color: #22d3ee;"><i class="fas fa-inbox"
+                    style="margin-right: 0.5rem;"></i> Webhooks</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/webhooks/toggle</span>
+                <p class="api-desc">Enable or disable webhook queuing. Body: <code>{ "enabled": true }</code></p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/webhooks</span>
+                <p class="api-desc">Get queued webhooks. Returns method, path, headers, body, and timestamp for each
+                    queued request.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/webhooks/replay</span>
+                <p class="api-desc">Replay a queued webhook delivery. Body: <code>{ "id": "wh-abc123" }</code></p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/webhooks/breakpoints</span>
+                <p class="api-desc">Enable/disable webhook breakpoints. When enabled, incoming requests are paused for
+                    inspection (auto-releases after 60s). Body: <code>{ "enabled": true }</code></p>
+            </div>
+
+            <!-- ===== SECURITY ===== -->
+            <h3 class="api-section-title" style="color: #f43f5e;"><i class="fas fa-shield-halved"
+                    style="margin-right: 0.5rem;"></i> Security</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/rate-limit</span>
+                <p class="api-desc">Configure rate limiting. Body:
+                    <code>{ "requests_per_minute": 60, "burst": 10 }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/ai-gateway/stats</span>
+                <p class="api-desc">Get AI Gateway statistics — threat summary, blocked request count, traffic
+                    classification breakdown.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/header-rules</span>
+                <p class="api-desc">Add, set, or remove response headers. Body:
+                    <code>{ "action": "set", "header": "X-Custom", "value": "hello" }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/e2e/verify</span>
+                <p class="api-desc">Get E2E encryption verification info — emoji fingerprint and hex fingerprint for the
+                    session.</p>
+            </div>
+
+            <!-- ===== SNAPSHOTS ===== -->
+            <h3 class="api-section-title" style="color: #60a5fa;"><i class="fas fa-camera"
+                    style="margin-right: 0.5rem;"></i> Snapshots</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/snapshot</span>
+                <p class="api-desc">Create a snapshot of tunnel traffic. Body:
+                    <code>{ "paths": ["/", "/api/users"] }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/snapshots</span>
+                <p class="api-desc">List all snapshots for the session.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/snapshots/:id/serve</span>
+                <p class="api-desc">Serve a specific snapshot page. Query: <code>?path=/api/users</code></p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-delete">DELETE</span>
+                <span class="api-path">/api/v1/snapshots/:id</span>
+                <p class="api-desc">Delete a snapshot.</p>
+            </div>
+
+            <!-- ===== SHARING ===== -->
+            <h3 class="api-section-title" style="color: #34d399;"><i class="fas fa-share-nodes"
+                    style="margin-right: 0.5rem;"></i> Sharing</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/share/create</span>
+                <p class="api-desc">Create a share link. Body: <code>{ "access": "read|write", "ttl": "24h" }</code>.
+                    Max 10 active shares per session.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/share/revoke</span>
+                <p class="api-desc">Revoke a share link. Body: <code>{ "share_id": "abc123" }</code></p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/shares</span>
+                <p class="api-desc">List all active shares for the session.</p>
+            </div>
+
+            <!-- ===== EDGE FUNCTIONS ===== -->
+            <h3 class="api-section-title" style="color: #c084fc;"><i class="fas fa-code-branch"
+                    style="margin-right: 0.5rem;"></i> Edge Functions</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/edge/rules</span>
+                <p class="api-desc">Create an edge rule. Body:
+                    <code>{ "name": "...", "path": "/old", "action": "redirect|block|mock|modify", "target": "/new" }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/edge/rules</span>
+                <p class="api-desc">List all edge rules for the session with hit counts.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-delete">DELETE</span>
+                <span class="api-path">/api/v1/edge/rules/:name</span>
+                <p class="api-desc">Remove an edge rule by name.</p>
+            </div>
+
+            <!-- ===== MESH ===== -->
+            <h3 class="api-section-title" style="color: #2dd4bf;"><i class="fas fa-circle-nodes"
+                    style="margin-right: 0.5rem;"></i> Edge Mesh</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/mesh/join</span>
+                <p class="api-desc">Join a mesh network. Body:
+                    <code>{ "mesh_id": "team-alpha", "hostname": "backend", "port": "3000", "protocol": "http" }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/mesh/leave</span>
+                <p class="api-desc">Leave a mesh network. Body: <code>{ "mesh_id": "team-alpha" }</code></p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/mesh/topology</span>
+                <p class="api-desc">Get full mesh topology — all members, hostnames, health status
+                    (online/offline/degraded), last-seen times.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/mesh/resolve</span>
+                <p class="api-desc">Resolve a .zyppr.local hostname to a session. Query:
+                    <code>?hostname=backend.zyppr.local</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/mesh/list</span>
+                <p class="api-desc">List all meshes the session belongs to.</p>
+            </div>
+
+            <!-- ===== P2P ===== -->
+            <h3 class="api-section-title" style="color: #818cf8;"><i class="fas fa-arrows-split-up-and-left"
+                    style="margin-right: 0.5rem;"></i> P2P Mesh</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/p2p/register</span>
+                <p class="api-desc">Register a peer for P2P connections. Body:
+                    <code>{ "peer_id": "...", "public_addr": "ip:port" }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/p2p/peers/:peer_id</span>
+                <p class="api-desc">Look up a peer's public address for UDP hole punching.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/p2p/relay</span>
+                <p class="api-desc">Create a TURN-like relay for peers that can't establish direct connections.</p>
+            </div>
+
+            <!-- ===== CHAOS ===== -->
+            <h3 class="api-section-title" style="color: #f43f5e;"><i class="fas fa-explosion"
+                    style="margin-right: 0.5rem;"></i> Chaos Engineering</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/chaos</span>
+                <p class="api-desc">Configure chaos parameters. Body:
+                    <code>{ "latency_ms": 500, "error_rate": 0.05, "error_code": 500 }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/chaos</span>
+                <p class="api-desc">Get current chaos configuration for the session.</p>
+            </div>
+
+            <!-- ===== DB STUDIO ===== -->
+            <h3 class="api-section-title" style="color: #f472b6;"><i class="fas fa-database"
+                    style="margin-right: 0.5rem;"></i> DB Studio</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/db-studio/connect</span>
+                <p class="api-desc">Connect to a tunneled database. Body:
+                    <code>{ "driver": "postgres|mysql|sqlite", "dsn": "..." }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/db-studio/schema</span>
+                <p class="api-desc">Get database schema — all tables, columns, and types.</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/db-studio/tables/:name</span>
+                <p class="api-desc">Browse rows in a specific table (paginated, read-only).</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/db-studio/query</span>
+                <p class="api-desc">Execute a read-only SQL query. Body:
+                    <code>{ "sql": "SELECT * FROM users LIMIT 10" }</code>
+                </p>
+            </div>
+
+            <!-- ===== KV & HEALTH ===== -->
+            <h3 class="api-section-title" style="color: #fbbf24;"><i class="fas fa-key"
+                    style="margin-right: 0.5rem;"></i> KV Store & Health</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/kv</span>
+                <p class="api-desc">Get a value by key. Query: <code>?key=feature_flag</code></p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/kv</span>
+                <p class="api-desc">Set a key-value pair. Body: <code>{ "key": "...", "value": "..." }</code></p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-delete">DELETE</span>
+                <span class="api-path">/api/v1/kv</span>
+                <p class="api-desc">Delete a key. Query: <code>?key=feature_flag</code></p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-post">POST</span>
+                <span class="api-path">/api/v1/health/config</span>
+                <p class="api-desc">Configure health checks. Body: <code>{ "path": "/health", "interval": 60 }</code>
+                </p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/health</span>
+                <p class="api-desc">Get health check status for the session — current state, last check time,
+                    consecutive failures.</p>
+            </div>
+
+            <!-- ===== SWAGGER ===== -->
+            <h3 class="api-section-title" style="color: #a78bfa;"><i class="fas fa-file-code"
+                    style="margin-right: 0.5rem;"></i> Auto-Generated Docs</h3>
+
+            <div class="api-endpoint">
+                <span class="api-method method-get">GET</span>
+                <span class="api-path">/api/v1/swagger</span>
+                <p class="api-desc">Get auto-generated OpenAPI 3.0 spec based on live traffic observation. Returns JSON
+                    with all observed paths, methods, and response codes.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div>
+                <a href="index.html" class="footer-logo">⚡ Zyppr</a>
+                <p class="footer-desc">The platform for developers to connect, route, and secure their environments
+                    effortlessly.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Platform</h5>
+                <a href="tunnel.html">Zyppr Tunnel</a>
+                <a href="p2p.html">Zyppr P2P</a>
+                <a href="lattice-wire.html">Lattice-Wire</a>
+                <a href="index.html#pricing">Pricing</a>
+            </div>
+            <div class="footer-col">
+                <h5>Resources</h5>
+                <a href="docs.html">Documentation</a>
+                <a href="api.html">API Reference</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-col">
+                <h5>Company</h5>
+                <a href="founder.html">Founder's Note</a>
+                <a href="about.html">About Us</a>
+                <a href="mailto:hello@zyppr.online">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy to clipboard functionality if there were any commands
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mouse follower
+            const cursor = document.getElementById('cursor');
+            const cursorDot = document.getElementById('cursor-dot');
+
+            if (cursor && cursorDot) {
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                    cursorDot.style.left = e.clientX + 'px';
+                    cursorDot.style.top = e.clientY + 'px';
+                });
+
+                document.querySelectorAll('a, button, .api-endpoint').forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+                });
+            }
+
+            // Navbar scroll
+            const nav = document.getElementById('navbar');
+            if (nav) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

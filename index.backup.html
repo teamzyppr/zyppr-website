@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en" class="lenis-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyppr · Portal to the Infinite</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="loading">
+
+    <!-- WebGL Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Grain Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Navigation (Floating) -->
+    <nav class="nav-dock">
+        <a href="index.html" class="nav-logo">
+            <img src="assets/logo.png" alt="Zyppr" class="logo-img" height="32" style="height: 32px; width: auto;">
+        </a>
+        <div class="nav-items">
+            <!-- Mega Menu Logic -->
+            <div class="nav-item-group">
+                <a href="#products" class="nav-item"
+                    style="padding-bottom: 1rem; margin-bottom: -1rem; display: block;">Products <i
+                        class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 4px; opacity: 0.7;"></i></a>
+                <div class="mega-menu">
+                    <div class="mm-col">
+                        <h4>Tunneling Services</h4>
+                        <a href="index.html" class="mm-link">
+                            <div class="mm-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="mm-text">
+                                <h5>Zyppr Tunnel</h5>
+                                <p>Expose localhost to the world.</p>
+                            </div>
+                        </a>
+                        <a href="vpn.html" class="mm-link">
+                            <div class="mm-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="mm-text">
+                                <h5>Zyppr P2P</h5>
+                                <p>Instant WireGuard privacy.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="mm-col">
+                        <h4>Developers</h4>
+                        <a href="docs.html" class="mm-link">
+                            <div class="mm-icon"><i class="fas fa-book"></i></div>
+                            <div class="mm-text">
+                                <h5>Documentation</h5>
+                                <p>Guides and API reference.</p>
+                            </div>
+                        </a>
+                        <a href="api.html" class="mm-link">
+                            <div class="mm-icon"><i class="fas fa-code"></i></div>
+                            <div class="mm-text">
+                                <h5>API Status</h5>
+                                <p>System health metrics.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <a href="#modules" class="nav-item">Modules</a>
+            <a href="#pricing" class="nav-item">Pricing</a>
+            <a href="founder.html" class="nav-item">About</a>
+        </div>
+        <div class="nav-actions">
+            <a href="http://localhost:8080/login" class="nav-link-sub">Console</a>
+            <a href="http://localhost:8080/signup" class="btn-sm-primary">Initialize</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <!-- Hero Logo (Small & Centered) -->
+            <img src="assets/logo.png" alt="Zyppr" class="hero-logo-img" height="40"
+                style="height:60px; width: auto; margin-bottom: 1rem; display: block; margin-left: auto; margin-right: auto;">
+
+            <div class="hero-split">
+                <div class="hero-text">
+
+                    <div class="hero-badge">
+                        <span class="badge-dot"></span> v2.0 Quantum Release
+                    </div>
+                    <h2 class="hero-title">
+                        <span class="reveal-text">Expose Your</span>
+                        <span class="reveal-text highlight-glitch" data-text="Localhost">Localhost</span>
+                        <span class="reveal-text">To The Cosmos</span>
+                    </h2>
+                    <p class="hero-sub">
+                        <b>The UAE's First Global Tunneling Network. <br>
+                            Secure, instant, and infinite tunnels for the GCC and the World.</b>
+                    </p>
+
+                    <div class="hero-cta-group">
+                        <a href="http://localhost:8080/signup" class="btn-primary-hero">
+                            Get Started
+                        </a>
+
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <!-- Modern Terminal -->
+                    <div class="terminal-glass">
+                        <style>
+                            /* ===== Terminal Container ===== */
+                            .terminal-glass {
+                                background: rgba(15, 23, 42, 0.65);
+                                backdrop-filter: blur(18px);
+                                border-radius: 14px;
+                                border: 1px solid rgba(148, 163, 184, 0.15);
+                                box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+                                overflow: hidden;
+                                max-width: 720px;
+                                margin: 0 auto;
+                            }
+
+                            /* ===== Header ===== */
+                            .term-header {
+                                display: flex;
+                                align-items: center;
+                                gap: 14px;
+                                padding: 12px 16px;
+                                background: rgba(2, 6, 23, 0.6);
+                                border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+                            }
+
+                            .window-controls {
+                                display: flex;
+                                gap: 8px;
+                            }
+
+                            .win-dot {
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                            }
+
+                            .win-dot.close {
+                                background: #ef4444;
+                            }
+
+                            .win-dot.min {
+                                background: #f59e0b;
+                            }
+
+                            .win-dot.max {
+                                background: #22c55e;
+                            }
+
+                            .term-tab {
+                                font-size: 14px;
+                                font-weight: 600;
+                                color: #e5e7eb;
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                            }
+
+                            /* ===== Body ===== */
+                            .term-body {
+                                padding: 18px;
+                                font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+                            }
+
+                            /* ===== Input Row ===== */
+                            .input-row {
+                                display: flex;
+                                gap: 16px;
+                                flex-wrap: wrap;
+                            }
+
+                            .field-group label {
+                                font-size: 12px;
+                                color: #94a3b8;
+                                margin-bottom: 4px;
+                                display: block;
+                            }
+
+                            .field-group input,
+                            .term-select {
+                                background: rgba(2, 6, 23, 0.8);
+                                border: 1px solid rgba(148, 163, 184, 0.15);
+                                border-radius: 8px;
+                                padding: 8px 10px;
+                                color: #e5e7eb;
+                                outline: none;
+                            }
+
+                            /* ===== Divider ===== */
+                            .term-divider {
+                                height: 1px;
+                                background: rgba(148, 163, 184, 0.12);
+                                margin: 16px 0;
+                            }
+
+                            /* ===== Result Row ===== */
+                            .result-row {
+                                display: flex;
+                                align-items: center;
+                                gap: 12px;
+                                flex-wrap: wrap;
+                            }
+
+                            .term-label {
+                                font-size: 13px;
+                                font-weight: 600;
+                                color: #94a3b8;
+                                white-space: nowrap;
+                            }
+
+                            /* ===== Command Display ===== */
+                            .cmd-display {
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 6px;
+                                background: #020617;
+                                border: 1px solid rgba(148, 163, 184, 0.15);
+                                padding: 10px 12px;
+                                border-radius: 10px;
+                                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                                color: #e5e7eb;
+                                white-space: nowrap;
+                            }
+
+                            .syntax-cmd {
+                                color: #38bdf8;
+                            }
+
+                            #dynamic-port {
+                                color: #fbbf24;
+                                font-weight: 600;
+                            }
+
+                            .term-copy {
+                                background: transparent;
+                                border: none;
+                                color: #94a3b8;
+                                cursor: pointer;
+                                font-size: 15px;
+                                margin-left: 6px;
+                            }
+
+                            .term-copy:hover {
+                                color: #38bdf8;
+                            }
+
+                            /* ===== Logs ===== */
+                            .term-logs {
+                                margin-top: 16px;
+                                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                                font-size: 13px;
+                            }
+
+                            .log-item {
+                                display: flex;
+                                gap: 8px;
+                                margin-bottom: 6px;
+                            }
+
+                            .log-time {
+                                color: #64748b;
+                            }
+
+                            .log-info {
+                                color: #e5e7eb;
+                            }
+
+                            .log-success {
+                                color: #22c55e;
+                            }
+
+                            .log-dim {
+                                color: #94a3b8;
+                            }
+
+                            .cursor-blink {
+                                animation: blink 1.1s steps(1) infinite;
+                            }
+
+                            @keyframes blink {
+                                50% {
+                                    opacity: 0;
+                                }
+                            }
+                        </style>
+
+                        <div class="term-header">
+                            <div class="window-controls">
+                                <span class="win-dot close"></span>
+                                <span class="win-dot min"></span>
+                                <span class="win-dot max"></span>
+                            </div>
+                            <div class="term-tab active">
+                                <i class="fas fa-bolt"></i> Quick Connect
+                            </div>
+                        </div>
+
+                        <div class="term-body">
+                            <div class="term-row input-row">
+                                <div class="field-group">
+                                    <label>Local Port</label>
+                                    <input type="number" id="term-port" value="3000" min="1" max="65535">
+                                </div>
+                                <div class="field-group">
+                                    <label>Region</label>
+                                    <select class="term-select">
+                                        <option>Dubai (AE)</option>
+                                        <option>Riyadh (SA)</option>
+                                        <option>London (GB)</option>
+                                        <option>New York (US)</option>
+                                        <option>Global (Any)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="term-divider"></div>
+
+                            <div class="term-row result-row">
+                                <span class="term-label">Access Command:</span>
+                                <div class="cmd-display">
+                                    <span class="syntax-cmd">ssh</span> -p 443 -R0:localhost:<span
+                                        id="dynamic-port">3000</span> qr@free.zyppr.online
+                                    <button class="term-copy" id="copy-term-btn"><i class="far fa-copy"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="term-logs">
+                                <div class="log-item"><span class="log-time">10:42:01</span> <span
+                                        class="log-info">Verifying identity...</span></div>
+                                <div class="log-item"><span class="log-time">10:42:02</span> <span class="log-success">✔
+                                        Forwarding http://localhost:<span class="dynamic-port-text">3000</span></span>
+                                </div>
+                                <div class="log-item"><span class="log-time">10:42:02</span> <span
+                                        class="log-dim">Waiting for requests...</span><span
+                                        class="cursor-blink">_</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    // Copy to clipboard functionality
+                    document.getElementById("copy-term-btn").addEventListener("click", () => {
+                        const cmd = document.querySelector(".cmd-display").innerText.replace('📋', '').trim();
+                        navigator.clipboard.writeText(cmd).then(() => {
+                            const btn = document.getElementById("copy-term-btn");
+                            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                            setTimeout(() => btn.innerHTML = '<i class="far fa-copy"></i>', 1200);
+                        });
+                    });
+
+                    // Dynamic port sync with input
+                    const portInput = document.getElementById("term-port");
+                    const dynamicPortSpan = document.getElementById("dynamic-port");
+                    portInput.addEventListener("input", () => {
+                        dynamicPortSpan.textContent = portInput.value;
+                        document.querySelector(".dynamic-port-text").textContent = portInput.value;
+                    });
+                </script>
+
+        </section>
+
+        <!-- Social Proof Strip -->
+        <div class="ticker-wrap">
+            <div class="ticker-heading">TRUSTED BY ENGINEERS AT</div>
+            <div class="ticker">
+                <div class="ticker-item"><i class="fab fa-aws"></i> AWS</div>
+                <div class="ticker-item"><i class="fab fa-google"></i> Google</div>
+                <div class="ticker-item"><i class="fab fa-microsoft"></i> Microsoft</div>
+                <div class="ticker-item"><i class="fab fa-spotify"></i> Spotify</div>
+                <div class="ticker-item"><i class="fab fa-stripe"></i> Stripe</div>
+            </div>
+        </div>
+
+        <!-- How It Works — Four Transport Methods -->
+        <section id="protocol" class="protocol-section">
+            <div class="section-header">
+                <span class="mono-kicker">01 // THE ARCHITECTURE</span>
+                <h2>Four Ways In. <span class="gradient-text">Zero Downloads.</span></h2>
+                <div class="protocol-manifesto"
+                    style="margin-top: 1rem; max-width: 900px; margin-left: auto; margin-right: auto; text-align: center;">
+                    <h1 style="font-size: 4.5rem; margin-bottom: 1.5rem; line-height: 1.2;">
+                        The World's First<br>Quad-Transport Tunnel
+                    </h1>
+                    <p style="color: #ccc; margin-bottom: 1rem;">SSH · QUIC · Browser · UDP — four distinct transport
+                        methods in one platform.<br>No other tunneling service offers more than one.</p>
+                    <p
+                        style="font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; color: var(--accent-cyan); letter-spacing: 1px;">
+                        WORLD-FIRST · DUAL ARCHITECTURE · CLI + ZERO-DOWNLOAD
+                    </p>
+                </div>
+            </div>
+
+            <div class="sticky-container">
+                <!-- Method 1: SSH -->
+                <div class="protocol-card card-1" style="--i:1">
+                    <div class="card-num">01</div>
+                    <div class="card-content">
+                        <h3>SSH One-Liner</h3>
+                        <p>Works on any machine with a terminal. No download, no signup, no binary. Every OS since 2005
+                            has SSH built in. Just run one command and you're live.</p>
+                        <div class="code-snippet plain">
+                            ssh -p 443 -R0:localhost:3000 TOKEN@tunl.zyppr.xyz
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+                            <i class="fas fa-check" style="color: #22c55e; margin-right: 0.3rem;"></i> Zero download
+                            <i class="fas fa-check"
+                                style="color: #22c55e; margin-left: 1rem; margin-right: 0.3rem;"></i> HTTP & TCP
+                            <i class="fas fa-check"
+                                style="color: #22c55e; margin-left: 1rem; margin-right: 0.3rem;"></i> Auto-HTTPS
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Method 2: CLI Binary -->
+                <div class="protocol-card card-2" style="--i:2">
+                    <div class="card-num">02</div>
+                    <div class="card-content">
+                        <h3>CLI Binary (QUIC)</h3>
+                        <p>Download the <code style="color: var(--accent-cyan);">zyppr</code> binary for the fastest
+                            possible experience. QUIC transport (UDP-based, faster than TCP), auto-reconnect,
+                            config-as-code, and P2P mesh.</p>
+                        <div class="code-snippet plain">
+                            zyppr tunnel 3000 8080 --udp 25565
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+                            <i class="fas fa-check" style="color: #22c55e; margin-right: 0.3rem;"></i> HTTP/TCP/UDP
+                            <i class="fas fa-check"
+                                style="color: #22c55e; margin-left: 1rem; margin-right: 0.3rem;"></i> P2P Mesh
+                            <i class="fas fa-check"
+                                style="color: #22c55e; margin-left: 1rem; margin-right: 0.3rem;"></i> Config-as-Code
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Method 3: Browser -->
+                <div class="protocol-card card-3" style="--i:3">
+                    <div class="card-num">03</div>
+                    <div class="card-content">
+                        <h3>Browser Tunnel</h3>
+                        <p>Open your browser, paste your token, and your localhost is live. Supports HTTP, streaming
+                            responses, and SSE. Nothing to install. Nothing to download. Nothing.</p>
+                        <div class="code-snippet plain" style="color: var(--accent-cyan);">
+                            <i class="fas fa-globe" style="margin-right: 0.5rem;"></i>
+                            Open browser → Paste token → Tunnel is live
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+                            <i class="fas fa-check" style="color: #22c55e; margin-right: 0.3rem;"></i> Zero install
+                            <i class="fas fa-check"
+                                style="color: #22c55e; margin-left: 1rem; margin-right: 0.3rem;"></i> SSE Streaming
+                            <i class="fas fa-check"
+                                style="color: #22c55e; margin-left: 1rem; margin-right: 0.3rem;"></i> Auto-reconnect
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Method 4: UDP Bridge -->
+                <div class="protocol-card card-3" style="--i:4">
+                    <div class="card-num">04</div>
+                    <div class="card-content">
+                        <h3>UDP Bridge (Zero-Download)</h3>
+                        <p>Tunnel UDP traffic — game servers, DNS, VoIP, IoT — with a single command. No binary to
+                            download. No tunneling service on Earth offers zero-download UDP.</p>
+                        <div class="code-snippet plain">
+                            node -e "$(curl -sL tunl.zyppr.xyz/bridge.js)" 25565 TOKEN
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+                            <i class="fas fa-star" style="color: #fbbf24; margin-right: 0.3rem;"></i> <strong
+                                style="color: #fbbf24;">World-First</strong>
+                            <i class="fas fa-check"
+                                style="color: #22c55e; margin-left: 1rem; margin-right: 0.3rem;"></i> Games / IoT / DNS
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 29 Features — Bento Grid -->
+        <section id="modules" class="modules-section">
+            <div class="section-header">
+                <span class="mono-kicker">02 // 29 BUILT-IN FEATURES</span>
+                <h2>Every Feature You Need. <span class="gradient-text">Built In.</span></h2>
+                <p
+                    style="color: #888; margin-top: 1rem; max-width: 700px; margin-left: auto; margin-right: auto; text-align: center;">
+                    Not plugins. Not add-ons. Not "coming soon." Every feature below is production-ready and included in
+                    your plan. 29 features. One platform.
+                </p>
+            </div>
+
+            <!-- Category 1: Security -->
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <h3
+                    style="font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-cyan); margin-bottom: 1.5rem; margin-top: 3rem;">
+                    <i class="fas fa-shield-halved" style="margin-right: 0.5rem;"></i> Security & Protection
+                </h3>
+            </div>
+            <div class="bento-grid">
+                <div class="bento-card span-2 glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-shield-halved bento-icon"></i>
+                        <h3>E2E Encryption</h3>
+                        <p>Every tunnel is encrypted end-to-end with verification. Each session gets a unique emoji
+                            fingerprint (🚀🌊💎🔑) so you can visually confirm no one is intercepting your traffic. Not
+                            just HTTPS — cryptographic proof.</p>
+                    </div>
+                    <div class="bento-viz viz-shield"></div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-brain bento-icon" style="color: #f472b6;"></i>
+                        <h3>AI Gateway <span
+                                style="font-size: 0.7rem; background: rgba(244,114,182,0.2); color: #f472b6; padding: 2px 8px; border-radius: 4px; margin-left: 6px;">WORLD-FIRST</span>
+                        </h3>
+                        <p>Real-time threat detection on your tunnel. Blocks SQL injection, XSS, path traversal, and
+                            suspicious user agents automatically. No WAF subscription needed.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-gauge-high bento-icon" style="color: #fb923c;"></i>
+                        <h3>Rate Limiter</h3>
+                        <p>Set per-session request limits with burst tolerance. Protect your dev environment from
+                            runaway scripts or DDoS during demos. Configure via dashboard or API.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 2: Developer Tools -->
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <h3
+                    style="font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-violet); margin-bottom: 1.5rem; margin-top: 3rem;">
+                    <i class="fas fa-code" style="margin-right: 0.5rem;"></i> Developer Tools
+                </h3>
+            </div>
+            <div class="bento-grid">
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-magnifying-glass bento-icon"></i>
+                        <h3>Request Inspector</h3>
+                        <p>See every request hitting your tunnel — method, path, headers, body, response code, timing.
+                            Full visibility without a proxy tool. Captures everything in real-time.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-rotate bento-icon" style="color: #34d399;"></i>
+                        <h3>Request Replay</h3>
+                        <p>Captured something interesting? Replay it with one click. Modify headers, body, or method
+                            before replaying. Full replay history with diff comparison.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-camera bento-icon" style="color: #60a5fa;"></i>
+                        <h3>Snapshots</h3>
+                        <p>Capture a point-in-time snapshot of all tunnel traffic. Persisted to disk — survives server
+                            restarts. Share snapshots with your team for debugging.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-file-code bento-icon" style="color: #a78bfa;"></i>
+                        <h3>Auto-Swagger</h3>
+                        <p>Zyppr observes your live traffic and auto-generates OpenAPI documentation. Every path,
+                            method, and response code — documented by usage, not by hand.</p>
+                    </div>
+                </div>
+                <div class="bento-card span-2 glow-border">
+                    <div class="bento-flex">
+                        <div class="bento-content">
+                            <i class="fas fa-database bento-icon" style="color: #f472b6;"></i>
+                            <h3>DB Studio <span
+                                    style="font-size: 0.7rem; background: rgba(244,114,182,0.2); color: #f472b6; padding: 2px 8px; border-radius: 4px; margin-left: 6px;">WORLD-FIRST</span>
+                            </h3>
+                            <p>A built-in web SQL browser for your tunneled databases. Browse schemas, explore tables,
+                                and run read-only queries — all from your dashboard. Like phpMyAdmin, but inside your
+                                tunnel. Supports PostgreSQL, MySQL, and SQLite.</p>
+                        </div>
+                        <div class="bento-stats">
+                            <div class="mini-stat">
+                                <span class="ms-val">3</span>
+                                <span class="ms-label">Databases</span>
+                            </div>
+                            <div class="mini-stat">
+                                <span class="ms-val">SQL</span>
+                                <span class="ms-label">Read-Only</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 3: Webhook Engineering -->
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <h3
+                    style="font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; color: #22d3ee; margin-bottom: 1.5rem; margin-top: 3rem;">
+                    <i class="fas fa-webhook" style="margin-right: 0.5rem;"></i> Webhook Engineering
+                </h3>
+            </div>
+            <div class="bento-grid">
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-inbox bento-icon" style="color: #22d3ee;"></i>
+                        <h3>Webhook Queue</h3>
+                        <p>Capture every incoming webhook from Stripe, GitHub, Twilio, or any service. Queue them for
+                            later inspection. Never miss a delivery again.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-play bento-icon" style="color: #4ade80;"></i>
+                        <h3>Webhook Replay</h3>
+                        <p>Failed webhook? Re-deliver it with one click. Modify the payload before replaying. Filter by
+                            method, path, or status code.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-pause-circle bento-icon" style="color: #fbbf24;"></i>
+                        <h3>Webhook Breakpoints <span
+                                style="font-size: 0.7rem; background: rgba(251,191,36,0.2); color: #fbbf24; padding: 2px 8px; border-radius: 4px; margin-left: 6px;">EXCLUSIVE</span>
+                        </h3>
+                        <p>Pause an incoming request mid-flight. Inspect it. Modify it. Then release it to your server.
+                            Like a debugger breakpoint, but for HTTP. 60-second auto-release ensures no permanent
+                            blocks.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-sliders bento-icon" style="color: #c084fc;"></i>
+                        <h3>Header Rules</h3>
+                        <p>Add, remove, or override any HTTP response header. Set CORS headers, security policies, or
+                            custom metadata without touching your backend code.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 4: Advanced Networking -->
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <h3
+                    style="font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; color: #f43f5e; margin-bottom: 1.5rem; margin-top: 3rem;">
+                    <i class="fas fa-diagram-project" style="margin-right: 0.5rem;"></i> Advanced Networking
+                </h3>
+            </div>
+            <div class="bento-grid">
+                <div class="bento-card span-2 glow-border">
+                    <div class="bento-flex">
+                        <div class="bento-content">
+                            <i class="fas fa-globe bento-icon" style="color: #38bdf8;"></i>
+                            <h3>Custom Domains + Auto-SSL</h3>
+                            <p>Bring your own domain. Point a CNAME record, and Zyppr automatically provisions a Let's
+                                Encrypt TLS certificate. HTTPS on your custom domain in minutes, not days. Auto-renewal
+                                included.</p>
+                        </div>
+                        <div class="bento-stats">
+                            <div class="mini-stat">
+                                <span class="ms-val">SSL</span>
+                                <span class="ms-label">Auto-Cert</span>
+                            </div>
+                            <div class="mini-stat">
+                                <span class="ms-val">∞</span>
+                                <span class="ms-label">Renewals</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-code-branch bento-icon" style="color: #a78bfa;"></i>
+                        <h3>Edge Functions</h3>
+                        <p>Attach lightweight route handlers to your tunnel. Redirect paths, block IPs, return mock
+                            responses, or enable maintenance mode — without touching your server.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-circle-nodes bento-icon" style="color: #2dd4bf;"></i>
+                        <h3>Edge Mesh <span
+                                style="font-size: 0.7rem; background: rgba(45,212,191,0.2); color: #2dd4bf; padding: 2px 8px; border-radius: 4px; margin-left: 6px;">WORLD-FIRST</span>
+                        </h3>
+                        <p>Link multiple developer laptops into a private mesh network. Laptop A can call <code
+                                style="color: var(--accent-cyan);">backend.zyppr.local</code> and it routes to Laptop B.
+                            Service discovery for dev teams.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-explosion bento-icon" style="color: #f43f5e;"></i>
+                        <h3>Chaos Engineering <span
+                                style="font-size: 0.7rem; background: rgba(244,63,94,0.2); color: #f43f5e; padding: 2px 8px; border-radius: 4px; margin-left: 6px;">EXCLUSIVE</span>
+                        </h3>
+                        <p>Inject 500ms latency. Return 5% random 500 errors. Simulate packet loss. Built-in fault
+                            injection to test your app's resilience before your users do.</p>
+                    </div>
+                </div>
+                <div class="bento-card span-2 glow-border">
+                    <div class="bento-flex">
+                        <div class="bento-content">
+                            <i class="fas fa-arrows-split-up-and-left bento-icon" style="color: #818cf8;"></i>
+                            <h3>P2P Mesh <span
+                                    style="font-size: 0.7rem; background: rgba(129,140,248,0.2); color: #818cf8; padding: 2px 8px; border-radius: 4px; margin-left: 6px;">WORLD-FIRST</span>
+                            </h3>
+                            <p>Connect two laptops directly via UDP hole punching — bypassing the server entirely. The
+                                CLI registers with the signaling server, exchanges NAT info, and punches through
+                                firewalls. If direct fails, falls back to server relay automatically. Near-zero latency
+                                for P2P data transfer.</p>
+                        </div>
+                        <div class="bento-stats">
+                            <div class="mini-stat">
+                                <span class="ms-val">P2P</span>
+                                <span class="ms-label">Direct UDP</span>
+                            </div>
+                            <div class="mini-stat">
+                                <span class="ms-val">~0ms</span>
+                                <span class="ms-label">Added Latency</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 5: Management & Operations -->
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <h3
+                    style="font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; color: #fbbf24; margin-bottom: 1.5rem; margin-top: 3rem;">
+                    <i class="fas fa-gauge" style="margin-right: 0.5rem;"></i> Operations & Management
+                </h3>
+            </div>
+            <div class="bento-grid">
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-chart-line bento-icon" style="color: #fbbf24;"></i>
+                        <h3>Live Dashboard</h3>
+                        <p>Real-time traffic stats, QR code sharing, request logs with color-coded status codes. View
+                            everything from the SSH terminal or the web dashboard.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-share-nodes bento-icon" style="color: #34d399;"></i>
+                        <h3>Tunnel Sharing</h3>
+                        <p>Share tunnel access with teammates via secure links. Read-only or write access. Set expiry
+                            times. Max 10 active shares per session for security.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-file-lines bento-icon" style="color: #60a5fa;"></i>
+                        <h3>Config-as-Code</h3>
+                        <p>Define all your tunnels in a <code style="color: var(--accent-cyan);">zyppr.yml</code> file.
+                            Run <code style="color: var(--accent-cyan);">zyppr up</code> and every tunnel starts
+                            simultaneously. Version-control your tunnel setup.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-heart-pulse bento-icon" style="color: #f472b6;"></i>
+                        <h3>Health Checks</h3>
+                        <p>Automatic uptime monitoring with branded status pages. Know instantly if your localhost goes
+                            down. Configurable check intervals and notification thresholds.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-fingerprint bento-icon" style="color: #c084fc;"></i>
+                        <h3>Custom Subdomains</h3>
+                        <p>Reserve your own cosmic identity. <code
+                                style="color: var(--accent-cyan);">myapp.tunl.zyppr.xyz</code> instead of random
+                            strings. Persistent across sessions on Pro plans.</p>
+                    </div>
+                </div>
+                <div class="bento-card glow-border">
+                    <div class="bento-content">
+                        <i class="fas fa-database bento-icon" style="color: #fb923c;"></i>
+                        <h3>KV Store</h3>
+                        <p>Session-scoped key-value storage. Store flags, feature toggles, or configuration that your
+                            edge functions can access. Lightweight and ephemeral.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases — Detailed -->
+        <section class="use-case-section">
+            <div class="uc-container">
+                <h2 class="uc-title">Perfect For <span class="gradient-text">Every Mission</span></h2>
+                <div class="uc-tags">
+                    <span class="uc-tag">Webhook Development</span>
+                    <span class="uc-tag">Client Demos</span>
+                    <span class="uc-tag">Mobile App Backend</span>
+                    <span class="uc-tag">Game Servers (UDP)</span>
+                    <span class="uc-tag">IoT & Edge Devices</span>
+                    <span class="uc-tag">Database Access</span>
+                    <span class="uc-tag">Chaos Testing</span>
+                    <span class="uc-tag">Team Collaboration</span>
+                    <span class="uc-tag">API Prototyping</span>
+                    <span class="uc-tag">Penetration Testing</span>
+                    <span class="uc-tag">CI/CD Pipelines</span>
+                    <span class="uc-tag">Remote SSH</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Competitor Comparison -->
+        <section class="modules-section" style="padding-top: 0;">
+            <div class="section-header">
+                <span class="mono-kicker">THE COMPARISON</span>
+                <h2>Zyppr vs. <span class="gradient-text">Everyone Else</span></h2>
+            </div>
+            <div style="max-width: 900px; margin: 2rem auto; overflow-x: auto; padding: 0 2rem;">
+                <table
+                    style="width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <th style="text-align: left; padding: 12px 16px; color: #888; font-weight: 500;">Feature
+                            </th>
+                            <th
+                                style="text-align: center; padding: 12px 16px; color: var(--accent-cyan); font-weight: 700;">
+                                Zyppr</th>
+                            <th style="text-align: center; padding: 12px 16px; color: #666; font-weight: 500;">ngrok
+                            </th>
+                            <th style="text-align: center; padding: 12px 16px; color: #666; font-weight: 500;">
+                                Cloudflare</th>
+                            <th style="text-align: center; padding: 12px 16px; color: #666; font-weight: 500;">Pinggy
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">Zero-download (SSH)</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">UDP Tunneling</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">Browser Tunnel</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">P2P Direct Connect</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">AI Threat Detection</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">DB Studio</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">Webhook Breakpoints</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">Chaos Engineering</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">QUIC Transport</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">Edge Functions</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 10px 16px; color: #ccc;">Config-as-Code</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #22c55e;">✓</td>
+                            <td style="text-align: center; color: #555;">✗</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 10px 16px; color: #ccc; font-weight: 600;">Total Features</td>
+                            <td
+                                style="text-align: center; color: var(--accent-cyan); font-weight: 700; font-size: 1.1rem;">
+                                29</td>
+                            <td style="text-align: center; color: #888;">~15</td>
+                            <td style="text-align: center; color: #888;">~8</td>
+                            <td style="text-align: center; color: #888;">~6</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px 16px; color: #ccc; font-weight: 600;">Pro Price</td>
+                            <td style="text-align: center; color: var(--accent-cyan); font-weight: 700;">$8/mo</td>
+                            <td style="text-align: center; color: #888;">$10/mo</td>
+                            <td style="text-align: center; color: #888;">Free*</td>
+                            <td style="text-align: center; color: #888;">$2.50/mo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Pricing — $0 / $8 / $49 -->
+        <section id="pricing" class="pricing-section">
+            <div class="section-header">
+                <span class="mono-kicker">03 // MEMBERSHIP</span>
+                <h2>Choose Your <span class="gradient-text">Trajectory</span></h2>
+                <p style="color: #888; margin-top: 0.5rem;">More features than ngrok. Less expensive. Built different.
+                </p>
+            </div>
+
+            <div class="pricing-deck">
+                <!-- Free -->
+                <div class="price-card glass-panel">
+                    <div class="pc-header">
+                        <h3>Spark</h3>
+                        <div class="price-val">$0</div>
+                        <p>For hobbyists & students.</p>
+                    </div>
+                    <ul class="pc-list">
+                        <li>1 Active Tunnel</li>
+                        <li>Random Subdomain</li>
+                        <li>HTTP & TCP Protocols</li>
+                        <li>Request Inspector</li>
+                        <li>1-Hour Sessions</li>
+                        <li>Community Support</li>
+                    </ul>
+                    <a href="http://localhost:8080/signup" class="btn-outline">Start Free</a>
+                </div>
+
+                <!-- Pro -->
+                <div class="price-card glass-panel featured">
+                    <div class="pc-badge">MOST POPULAR</div>
+                    <div class="pc-header">
+                        <h3>Beam</h3>
+                        <div class="price-val">$8</div>
+                        <p>For professional developers.</p>
+                    </div>
+                    <ul class="pc-list">
+                        <li>Unlimited Tunnels</li>
+                        <li>Custom Subdomains</li>
+                        <li>HTTP / TCP / UDP</li>
+                        <li>Custom Domains + Auto-SSL</li>
+                        <li>All 29 Features</li>
+                        <li>Webhooks + Breakpoints</li>
+                        <li>AI Gateway</li>
+                        <li>Persistent Sessions</li>
+                        <li>DB Studio</li>
+                        <li>Password Protection</li>
+                        <li>P2P Mesh</li>
+                        <li>Priority Support</li>
+                    </ul>
+                    <a href="http://localhost:8080/signup" class="btn-primary">Get Beam</a>
+                </div>
+
+                <!-- Team -->
+                <div class="price-card glass-panel">
+                    <div class="pc-header">
+                        <h3>Warp</h3>
+                        <div class="price-val">$49</div>
+                        <p>For teams & organizations.</p>
+                    </div>
+                    <ul class="pc-list">
+                        <li>Everything in Beam</li>
+                        <li>Team Management</li>
+                        <li>Edge Mesh (Team DNS)</li>
+                        <li>SSO / SAML Integration</li>
+                        <li>Audit Logs</li>
+                        <li>SLA Guarantee (99.9%)</li>
+                        <li>Dedicated Support</li>
+                        <li>Self-Hosted Option</li>
+                    </ul>
+                    <a href="mailto:hello@zyppr.online" class="btn-outline">Contact Sales</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div
+                        style="font-family: 'Space Grotesk'; font-size: 1.5rem; font-weight: 700; color: white; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="color: var(--accent-cyan)">⚡</span> Zyppr
+                    </div>
+                    <p>The first networking platform with quad-transport tunneling, 29 built-in features, and
+                        zero-download access — built from the UAE for the world.</p>
+                    <div class="footer-status">
+                        <div class="status-dot"></div> All Systems Operational
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Platform</h4>
+                    <div class="footer-links-col">
+                        <a href="index.html">Tunneling</a>
+                        <a href="vpn.html">Zyppr VPN</a>
+                        <a href="#pricing">Pricing</a>
+                        <a href="docs.html">Documentation</a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <div class="footer-links-col">
+                        <a href="founder.html">Founder's Note</a>
+                        <a href="about.html">Our Story</a>
+                        <a href="legal.html">Terms of Service</a>
+                        <a href="privacy.html">Privacy Policy</a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <div class="footer-links-col">
+                        <a href="docs.html">Documentation</a>
+                        <a href="api.html">API Reference</a>
+                        <a href="faq.html">FAQ</a>
+                        <a href="https://github.com/" target="_blank">GitHub</a>
+                        <a href="mailto:hello@zyppr.online">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 Zyppr Inc. • Made with ❤️ in Royal Emirate of Dubai
+            </div>
+        </footer>
+    </main>
+
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
